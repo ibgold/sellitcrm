@@ -23,6 +23,11 @@ jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     
+    # AJOUT CRUCIAL: Spécifie l'environnement de déploiement requis par GitHub Pages
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+      
     steps:
       # 1. Checkout du code
       - name: Checkout du dépôt
@@ -32,12 +37,11 @@ jobs:
       - name: Configuration de GitHub Pages
         uses: actions/configure-pages@v5
 
-      # 3. Construction (pas d'étape de construction réelle nécessaire pour un fichier HTML unique)
-      # On crée un artefact zip à partir du répertoire racine, qui contient notre crm_prospection.html
+      # 3. Création de l'artefact (doit utiliser le chemin du répertoire où est le HTML)
       - name: Création de l'artefact de construction
         uses: actions/upload-pages-artifact@v3
         with:
-          # Publication du contenu de la racine du dépôt (où se trouve crm_prospection.html)
+          # Assurez-vous que page_de_suivi.html est à la racine du dépôt.
           path: '.'
           
       # 4. Déploiement vers GitHub Pages
