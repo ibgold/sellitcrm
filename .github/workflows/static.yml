@@ -1,0 +1,46 @@
+# .github/workflows/deploy.yml
+# Déploiement continu de l'application statique sur GitHub Pages
+
+name: Déploiement sur GitHub Pages
+
+on:
+  # Déclenche le workflow à chaque push sur la branche 'main'
+  push:
+    branches:
+      - main
+  
+  # Permet d'exécuter ce workflow manuellement depuis l'onglet Actions
+  workflow_dispatch:
+
+# Permettre à GitHub Actions de modifier le dépôt pour le déploiement des Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  # Tâche de construction et de déploiement
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+      # 1. Checkout du code
+      - name: Checkout du dépôt
+        uses: actions/checkout@v4
+      
+      # 2. Configuration de GitHub Pages
+      - name: Configuration de GitHub Pages
+        uses: actions/configure-pages@v5
+
+      # 3. Construction (pas d'étape de construction réelle nécessaire pour un fichier HTML unique)
+      # On crée un artefact zip à partir du répertoire racine, qui contient notre crm_prospection.html
+      - name: Création de l'artefact de construction
+        uses: actions/upload-pages-artifact@v3
+        with:
+          # Publication du contenu de la racine du dépôt (où se trouve crm_prospection.html)
+          path: '.'
+          
+      # 4. Déploiement vers GitHub Pages
+      - name: Déploiement sur GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
