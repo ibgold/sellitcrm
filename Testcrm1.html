@@ -37,7 +37,7 @@
                 <p id="metric-followup" class="text-2xl font-bold text-indigo-700">0</p>
             </div>
             <div class="bg-white p-5 rounded-xl shadow-md border-l-4 border-green-500">
-                <p class="text-sm font-medium text-gray-500">Deals Closés (J)</p>
+                <p id="metric-closed-label" class="text-sm font-medium text-gray-500">Deals Closés (J)</p>
                 <p id="metric-closed" class="text-2xl font-bold text-green-700">0</p>
             </div>
         </div>
@@ -139,6 +139,12 @@
         <div id="no-data-message" class="text-center p-8 text-gray-500 hidden">
             Aucun deal trouvé. Utilisez le formulaire ci-dessus pour ajouter votre première entrée !
         </div>
+        
+        <!-- NOUVEAU: Console de Debugage -->
+        <div class="mt-8">
+            <h3 class="text-xl font-semibold text-gray-800 mb-2">Console de Debugage (Réservée aux erreurs API)</h3>
+            <pre id="debug-console" class="bg-gray-800 text-green-400 p-4 rounded-lg overflow-x-auto text-sm max-h-48">Attente de la réponse de l'API...</pre>
+        </div>
 
 
         <!-- Tableau des pistes -->
@@ -180,8 +186,8 @@
         const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzwJjpT47S5CcDklTn79vPNTbpkvcOR00JlzdjBip_CmIcq2j3f4KmTYKX_PqI3Gg41/exec'; 
         // *************************************************************
 
-        let allDealsCache = []; // Cache pour les données brutes de la feuille
-        let editingId = null; // ID du deal en cours d'édition (Sheet ID)
+        let allDealsCache = []; 
+        let editingId = null; 
 
         // Sélecteurs DOM
         const dealsTableBody = document.getElementById('deals-table-body');
@@ -192,6 +198,7 @@
         const loadingMessage = document.getElementById('loading-message');
         const errorMessage = document.getElementById('error-message');
         const noDataMessage = document.getElementById('no-data-message');
+        const debugConsole = document.getElementById('debug-console');
         
         const metricTotal = document.getElementById('metric-total');
         const metricFollowUp = document.getElementById('metric-followup');
@@ -212,6 +219,9 @@
         async function fetchAppsScript(action, data = null) {
             const url = APPS_SCRIPT_URL + (action === 'READ' ? '?action=READ' : '');
             
+            // Réinitialiser la console de debugage
+            debugConsole.textContent = `Tentative de ${action}...`;
+
             try {
                 const response = await fetch(url, {
                     method: action === 'READ' ? 'GET' : 'POST',
@@ -220,20 +230,33 @@
                     headers: { 'Content-Type': 'text/plain' },
                     body: action !== 'READ' ? JSON.stringify({ action, data }) : null,
                 });
-
+                
+                // Si la réponse n'est pas OK (e.g., 404, 500)
                 if (!response.ok) {
+                    const text = await response.text();
+                    debugConsole.textContent = `Erreur HTTP ${response.status} lors de l'action ${action}.\nRéponse brute du serveur Apps Script: ${text}`;
                     throw new Error(`Erreur HTTP: ${response.status}`);
                 }
                 
+                // Tenter de lire le JSON
                 const result = await response.json();
+                debugConsole.textContent = `Action ${action} réussie.\nRéponse JSON: ${JSON.stringify(result, null, 2)}`;
+
+
                 if (!result.success) {
+                    // Si le statut HTTP est 200 mais le JSON indique une erreur (ex: feuille non trouvée)
+                    debugConsole.textContent = `Action ${action} réussie, mais échec logique Apps Script. Message: ${result.error || result.message}`;
                     throw new Error(result.error || `Erreur Apps Script: ${result.message}`);
                 }
                 return result;
 
             } catch (error) {
-                console.error("Erreur de communication avec Apps Script:", error);
-                errorMessage.textContent = `Erreur de connexion/serveur: ${error.message}. Vérifiez la console Apps Script. Assurez-vous que l'onglet de la feuille est bien nommé dans Code.gs.`;
+                // Erreur de connexion (Failed to fetch) ou autre erreur JavaScript/réseau
+                if (error.message.includes('Failed to fetch')) {
+                    errorMessage.textContent = `Erreur de connexion/serveur: L'application web n'a pas pu joindre l'API Apps Script. Vérifiez si l'URL est correcte et si le script est bien déployé sur "Tout le monde".`;
+                } else if (!errorMessage.textContent.includes("Erreur de connexion/serveur")) {
+                    errorMessage.textContent = `Erreur Apps Script: ${error.message}. Vérifiez les logs d'exécution dans votre éditeur Apps Script.`;
+                }
                 errorMessage.classList.remove('hidden');
                 return { success: false, error: error.message };
             }
@@ -300,8 +323,8 @@
                 const aPast = a.dateRDV && isPastDate(a.dateRDV);
                 const bPast = b.dateRDV && isPastDate(b.dateRDV);
                 
-                if (aPast && !bPast) return -1; // a vient avant b
-                if (!aPast && bPast) return 1;  // a vient après b
+                if (aPast && !bPast) return -1; 
+                if (!aPast && bPast) return 1;  
                 
                 return 0; 
             });
@@ -367,7 +390,7 @@
             if (result.success) {
                 alertUser(`Deal pour "${nomPrenom}" ${editingId ? 'mis à jour' : 'ajouté'} avec succès.`, 'success');
                 resetForm();
-                await loadDeals(); // Recharger les données pour rafraîchir le tableau
+                await loadDeals(); 
             } else {
                 alertUser(`Échec de l'opération: ${result.error}`, 'error');
             }
@@ -525,7 +548,6 @@
             const deal = allDealsCache.find(l => l.id === id);
             if (!deal) return;
             
-            // Le Apps Script renvoie la chaîne complète (incluant les séparateurs \n---\n)
             modalHistoryContent.textContent = deal.commentaireHistory || 'Aucun historique de commentaire.';
             historyModal.classList.remove('hidden');
             historyModal.classList.add('flex');
@@ -539,7 +561,6 @@
         function displayCommentHistory(historyString) {
             const historyDiv = document.getElementById('history-content');
             if (historyString) {
-                // Utilisation de textContent pour afficher l'historique brut (le style CSS gère les retours à la ligne)
                 historyDiv.textContent = historyString; 
                 document.getElementById('comment-history').classList.remove('hidden');
             } else {
