@@ -1,50 +1,44 @@
-# .github/workflows/deploy.yml
-# Déploiement continu de l'application statique sur GitHub Pages
 
-name: Déploiement sur GitHub Pages
+# Simple workflow for deploying static content to GitHub Pages
+name: Deploy static content to Pages
 
 on:
-  # Déclenche le workflow à chaque push sur la branche 'main'
+  # Runs on pushes targeting the default branch
   push:
-    branches:
-      - main
-  
-  # Permet d'exécuter ce workflow manuellement depuis l'onglet Actions
+    branches: ["main"]
+
+  # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
-# Permettre à GitHub Actions de modifier le dépôt pour le déploiement des Pages
+# Sets permissions to allow deployment of pages
 permissions:
   contents: read
   pages: write
   id-token: write
 
+# Allow only one concurrent deployment, skipping runs queued between the run in-progress and latest queued.
+# However, do allow for a second run to be queued since the second might be a push targeting a different branch that should fail anyway.
+concurrency:
+  cancel-in-progress: true
+  group: ${{ github.workflow }}-${{ github.ref }}
+
 jobs:
-  # Tâche de construction et de déploiement
-  build-and-deploy:
-    runs-on: ubuntu-latest
-    
-    # AJOUT CRUCIAL: Spécifie l'environnement de déploiement requis par GitHub Pages
+  # Single deploy job since we're just deploying static content.
+  deploy:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-      
+    runs-on: ubuntu-latest
     steps:
-      # 1. Checkout du code
-      - name: Checkout du dépôt
+      - name: Checkout
         uses: actions/checkout@v4
-      
-      # 2. Configuration de GitHub Pages
-      - name: Configuration de GitHub Pages
-        uses: actions/configure-pages@v5
-
-      # 3. Création de l'artefact (doit utiliser le chemin du répertoire où est le HTML)
-      - name: Création de l'artefact de construction
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+      - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          # Assurez-vous que page_de_suivi.html est à la racine du dépôt.
-          path: '.'
-          
-      # 4. Déploiement vers GitHub Pages
-      - name: Déploiement sur GitHub Pages
+          # Upload the root directory where your cahier_de_log.html resides
+          path: './'
+      - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
