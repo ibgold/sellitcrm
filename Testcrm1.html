@@ -4,29 +4,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Page de Suivi des Deals (CRM)</title>
-    <!-- Chargement de Tailwind CSS pour un design moderne et réactif -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Configuration de la police Inter -->
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
         body { font-family: 'Inter', sans-serif; }
-        /* Style pour l'historique des commentaires */
         #history-modal, #comment-history { white-space: pre-wrap; }
     </style>
 </head>
 <body class="bg-gray-50 min-h-screen">
 
     <div id="app" class="container mx-auto p-4 sm:p-8">
-        <!-- En-tête de l'application -->
         <header class="mb-8 border-b pb-4">
             <h1 class="text-3xl font-bold text-gray-800">Page de Suivi des Deals de Vente</h1>
             <p class="text-gray-500">Données synchronisées en temps réel avec Google Sheet via Apps Script API.</p>
             <p class="text-xs text-green-600 font-semibold mt-2" id="app-script-warning">
-                ✅ URL Apps Script configurée. N'oubliez pas de redéployer le script Apps après chaque modification du `Code.gs`.
+                ✅ URL Apps Script configurée.
             </p>
         </header>
         
-        <!-- DASHBOARD/INDICATEURS CLÉS pour les Closers -->
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
             <div class="bg-white p-5 rounded-xl shadow-md border-l-4 border-blue-500">
                 <p class="text-sm font-medium text-gray-500">Deals Totaux</p>
@@ -42,28 +37,31 @@
             </div>
         </div>
 
-        <!-- Section du formulaire pour ajouter/modifier une piste -->
         <div class="bg-white shadow-xl rounded-2xl p-6 mb-8 border border-blue-100">
             <h2 class="text-2xl font-semibold text-blue-800 mb-4" id="form-title">Ajouter un Nouveau Deal</h2>
             <form id="deal-form" class="grid grid-cols-1 md:grid-cols-3 gap-6">
 
-                <!-- Champs de Saisie -->
+                <!-- Données principales -->
                 <div><label for="nomPrenom" class="block text-sm font-medium text-gray-700">Nom Prénom *</label><input type="text" id="nomPrenom" required class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 transition duration-150"></div>
                 <div><label for="source" class="block text-sm font-medium text-gray-700">Source (A) *</label><select id="source" required class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 bg-white transition duration-150"><option value="">Sélectionner...</option><option value="Marketing">Marketing</option><option value="Setting">Setting</option><option value="Prise de rdv">Prise de RDV</option><option value="Autre">Autre</option></select></div>
+                
+                <!-- Entrepreneur est maintenant ici (texte) -->
+                <div><label for="entrepreneur" class="block text-sm font-medium text-gray-700">Entrepreneur (F)</label><input type="text" id="entrepreneur" class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 transition duration-150" placeholder="Nom de l'entrepreneur"></div>
+
                 <div><label for="dateRDV" class="block text-sm font-medium text-gray-700">Date RDV / Dernier Suivi</label><input type="date" id="dateRDV" class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 transition duration-150"></div>
                 <div><label for="email" class="block text-sm font-medium text-gray-700">Adresse Email (C)</label><input type="email" id="email" class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 transition duration-150"></div>
                 <div><label for="numero" class="block text-sm font-medium text-gray-700">Numéro (D)</label><input type="text" id="numero" class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 transition duration-150" placeholder="e.g. 0612345678"></div>
+                
                 <div><label for="formation" class="block text-sm font-medium text-gray-700">Formation / Produit (L)</label><select id="formation" class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 bg-white transition duration-150"><option value="">Sélectionner...</option><option value="Produit B 4000">Produit B 4000</option><option value="Produit A 2000">Produit A 2000</option><option value="N/A">N/A</option></select></div>
                 <div><label for="prix" class="block text-sm font-medium text-gray-700">Prix (€) (M)</label><input type="number" id="prix" step="0.01" min="0" class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 transition duration-150"></div>
                 <div><label for="typePaiement" class="block text-sm font-medium text-gray-700">Type de Paiement (N)</label><select id="typePaiement" class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 bg-white transition duration-150"><option value="">Sélectionner...</option><option value="CB">Carte Bancaire</option><option value="Virement">Virement</option><option value="3x">Paiement en 3x</option><option value="Intégral">Paiement Intégral</option><option value="N/A">N/A</option></select></div>
                 <div><label for="mensualite" class="block text-sm font-medium text-gray-700">Mensualité (€) (O)</label><input type="number" id="mensualite" step="0.01" min="0" class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 transition duration-150"></div>
                 <div class="md:col-span-3"><label for="enregistrementCall" class="block text-sm font-medium text-gray-700">Lien Enregistrement du call (R)</label><input type="url" id="enregistrementCall" class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 transition duration-150" placeholder="https://lien.vers.appel"></div>
 
-                <!-- Checkboxes -->
+                <!-- Checkboxes (Statuts Seulement) -->
                 <div class="md:col-span-3 border-t pt-4 mt-2">
                     <h3 class="text-lg font-medium text-gray-700 mb-3">Statuts et Flags</h3>
-                    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
-                        <label class="flex items-center space-x-2 p-3 bg-gray-50 rounded-lg shadow-sm border hover:border-blue-400 cursor-pointer transition"><input type="checkbox" id="entrepreneur" class="h-5 w-5 text-blue-600 rounded border-gray-300 focus:ring-blue-500"><span class="text-sm font-medium text-gray-700">Entrepreneur (F)</span></label>
+                    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
                         <label class="flex items-center space-x-2 p-3 bg-gray-50 rounded-lg shadow-sm border hover:border-blue-400 cursor-pointer transition"><input type="checkbox" id="ghost" class="h-5 w-5 text-yellow-600 rounded border-gray-300 focus:ring-yellow-500"><span class="text-sm font-medium text-gray-700">Ghost (G)</span></label>
                         <label class="flex items-center space-x-2 p-3 bg-gray-50 rounded-lg shadow-sm border hover:border-blue-400 cursor-pointer transition"><input type="checkbox" id="aFollowUp" class="h-5 w-5 text-indigo-600 rounded border-gray-300 focus:ring-indigo-500"><span class="text-sm font-medium text-gray-700">À Follow Up (H)</span></label>
                         <label class="flex items-center space-x-2 p-3 bg-red-50 rounded-lg shadow-sm border border-red-200 hover:border-red-400 cursor-pointer transition"><input type="checkbox" id="nonClose" class="h-5 w-5 text-red-600 rounded border-gray-300 focus:ring-red-500"><span class="text-sm font-medium text-gray-700">Non Closé (I)</span></label>
@@ -72,7 +70,7 @@
                     </div>
                 </div>
 
-                <!-- Nouveau Commentaire (Q) et Historique -->
+                <!-- Commentaires -->
                 <div class="md:col-span-3">
                     <label for="newComment" class="block text-sm font-medium text-gray-700">Nouveau Commentaire (Q)</label>
                     <textarea id="newComment" rows="2" class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 transition duration-150" placeholder="Ajouter une note de suivi pour ce call..."></textarea>
@@ -82,7 +80,6 @@
                     </div>
                 </div>
 
-                <!-- Boutons d'action -->
                 <div class="md:col-span-3 flex justify-end space-x-4 pt-4">
                     <button type="button" id="cancel-edit-btn" class="hidden px-6 py-2 bg-gray-300 text-gray-700 font-semibold rounded-xl hover:bg-gray-400 transition duration-200">Annuler</button>
                     <button type="submit" class="px-8 py-3 bg-blue-600 text-white font-bold rounded-xl shadow-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition duration-200 transform hover:scale-[1.01]">
@@ -92,10 +89,6 @@
             </form>
         </div>
 
-        <!-- Section de la liste des pistes (Tableau) -->
-        <h2 class="text-2xl font-semibold text-gray-800 mb-4">Deals Actuels</h2>
-        
-        <!-- FILTRES -->
         <div class="bg-white p-4 rounded-xl shadow-md mb-6 border border-gray-200 grid grid-cols-2 md:grid-cols-4 gap-4">
             <div>
                 <label for="filter-status" class="block text-sm font-medium text-gray-700">Filtrer par statut</label>
@@ -129,25 +122,15 @@
             </div>
         </div>
 
-        <!-- Conteneur pour les messages de chargement/erreur -->
-        <div id="loading-message" class="text-center p-8 text-gray-500">
-            Chargement des données depuis Google Sheet...
-        </div>
-        <div id="error-message" class="text-center p-4 bg-red-100 text-red-700 border border-red-300 rounded-lg hidden">
-            Erreur de communication avec l'API Google Apps Script.
-        </div>
-        <div id="no-data-message" class="text-center p-8 text-gray-500 hidden">
-            Aucun deal trouvé. Utilisez le formulaire ci-dessus pour ajouter votre première entrée !
-        </div>
+        <div id="loading-message" class="text-center p-8 text-gray-500">Chargement des données depuis Google Sheet...</div>
+        <div id="error-message" class="text-center p-4 bg-red-100 text-red-700 border border-red-300 rounded-lg hidden"></div>
+        <div id="no-data-message" class="text-center p-8 text-gray-500 hidden">Aucun deal trouvé.</div>
         
-        <!-- NOUVEAU: Console de Debugage -->
         <div class="mt-8">
-            <h3 class="text-xl font-semibold text-gray-800 mb-2">Console de Debugage (Réservée aux erreurs API)</h3>
+            <h3 class="text-xl font-semibold text-gray-800 mb-2">Console de Debugage</h3>
             <pre id="debug-console" class="bg-gray-800 text-green-400 p-4 rounded-lg overflow-x-auto text-sm max-h-48">Attente de la réponse de l'API...</pre>
         </div>
 
-
-        <!-- Tableau des pistes -->
         <div class="bg-white shadow-xl rounded-2xl overflow-x-auto">
             <table class="min-w-full divide-y divide-gray-200">
                 <thead class="bg-blue-50">
@@ -160,36 +143,25 @@
                         <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                     </tr>
                 </thead>
-                <tbody id="deals-table-body" class="bg-white divide-y divide-gray-200">
-                    <!-- Les données des pistes seront insérées ici par JavaScript -->
-                </tbody>
+                <tbody id="deals-table-body" class="bg-white divide-y divide-gray-200"></tbody>
             </table>
         </div>
         
-        <!-- Boîte de dialogue modale pour l'historique des commentaires (cachée par défaut) -->
         <div id="history-modal" class="fixed inset-0 bg-gray-900 bg-opacity-70 hidden items-center justify-center z-50">
             <div class="bg-white p-6 rounded-xl shadow-2xl w-full max-w-lg">
                 <h3 class="text-xl font-bold mb-4 text-blue-800">Historique des Commentaires</h3>
-                <div id="modal-history-content" class="max-h-80 overflow-y-auto space-y-3 p-2 bg-gray-50 rounded-lg whitespace-pre-wrap">
-                    <!-- Contenu de l'historique ici -->
-                </div>
-                <div class="flex justify-end mt-4">
-                    <button id="close-modal-btn" class="px-4 py-2 bg-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-400 transition duration-150">Fermer</button>
-                </div>
+                <div id="modal-history-content" class="max-h-80 overflow-y-auto space-y-3 p-2 bg-gray-50 rounded-lg whitespace-pre-wrap"></div>
+                <div class="flex justify-end mt-4"><button id="close-modal-btn" class="px-4 py-2 bg-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-400 transition duration-150">Fermer</button></div>
             </div>
         </div>
-
     </div>
 
     <script>
-        // *** URL DE L'API APPS SCRIPT (fournie par l'utilisateur) ***
         const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzwJjpT47S5CcDklTn79vPNTbpkvcOR00JlzdjBip_CmIcq2j3f4KmTYKX_PqI3Gg41/exec'; 
-        // *************************************************************
 
         let allDealsCache = []; 
         let editingId = null; 
 
-        // Sélecteurs DOM
         const dealsTableBody = document.getElementById('deals-table-body');
         const dealForm = document.getElementById('deal-form');
         const formTitle = document.getElementById('form-title');
@@ -214,12 +186,8 @@
         const modalHistoryContent = document.getElementById('modal-history-content');
         const closeModalBtn = document.getElementById('close-modal-btn');
         
-        // --- Fonctions d'API et de Communication ---
-        
         async function fetchAppsScript(action, data = null) {
             const url = APPS_SCRIPT_URL + (action === 'READ' ? '?action=READ' : '');
-            
-            // Réinitialiser la console de debugage
             debugConsole.textContent = `Tentative de ${action}...`;
 
             try {
@@ -231,32 +199,20 @@
                     body: action !== 'READ' ? JSON.stringify({ action, data }) : null,
                 });
                 
-                // Si la réponse n'est pas OK (e.g., 404, 500)
                 if (!response.ok) {
                     const text = await response.text();
-                    debugConsole.textContent = `Erreur HTTP ${response.status} lors de l'action ${action}.\nRéponse brute du serveur Apps Script: ${text}`;
+                    debugConsole.textContent = `Erreur HTTP ${response.status}.\n${text}`;
                     throw new Error(`Erreur HTTP: ${response.status}`);
                 }
                 
-                // Tenter de lire le JSON
                 const result = await response.json();
-                debugConsole.textContent = `Action ${action} réussie.\nRéponse JSON: ${JSON.stringify(result, null, 2)}`;
+                debugConsole.textContent = `Action ${action} réussie.`;
 
-
-                if (!result.success) {
-                    // Si le statut HTTP est 200 mais le JSON indique une erreur (ex: feuille non trouvée)
-                    debugConsole.textContent = `Action ${action} réussie, mais échec logique Apps Script. Message: ${result.error || result.message}`;
-                    throw new Error(result.error || `Erreur Apps Script: ${result.message}`);
-                }
+                if (!result.success) throw new Error(result.error || result.message);
                 return result;
 
             } catch (error) {
-                // Erreur de connexion (Failed to fetch) ou autre erreur JavaScript/réseau
-                if (error.message.includes('Failed to fetch')) {
-                    errorMessage.textContent = `Erreur de connexion/serveur: L'application web n'a pas pu joindre l'API Apps Script. Vérifiez si l'URL est correcte et si le script est bien déployé sur "Tout le monde".`;
-                } else if (!errorMessage.textContent.includes("Erreur de connexion/serveur")) {
-                    errorMessage.textContent = `Erreur Apps Script: ${error.message}. Vérifiez les logs d'exécution dans votre éditeur Apps Script.`;
-                }
+                errorMessage.textContent = `Erreur: ${error.message}`;
                 errorMessage.classList.remove('hidden');
                 return { success: false, error: error.message };
             }
@@ -268,34 +224,27 @@
             noDataMessage.classList.add('hidden');
 
             const result = await fetchAppsScript('READ');
-
             loadingMessage.classList.add('hidden');
 
             if (result.success) {
                 allDealsCache = result.deals || [];
                 applyFiltersAndRender();
                 if (allDealsCache.length === 0) noDataMessage.classList.remove('hidden');
-                
                 if (editingId) {
                     const currentDeal = allDealsCache.find(d => d.id === editingId);
                     if (!currentDeal) resetForm();
                 }
-
             } else {
                 dealsTableBody.innerHTML = '';
             }
         }
 
-        // --- Logique de Filtration ---
-
         function applyFiltersAndRender() {
             let filteredDeals = [...allDealsCache];
-
             const statusFilter = filterStatus.value;
             const rdvPastFilter = filterRdvPast.value;
             const sourceFilter = filterSource.value;
 
-            // Filtrage par Statut
             if (statusFilter !== 'all') {
                 filteredDeals = filteredDeals.filter(deal => {
                     switch (statusFilter) {
@@ -308,33 +257,26 @@
                 });
             }
 
-            // Filtrage par Date RDV (Passée)
             if (rdvPastFilter === 'past') {
                 filteredDeals = filteredDeals.filter(deal => deal.dateRDV && isPastDate(deal.dateRDV));
             }
 
-            // Filtrage par Source
             if (sourceFilter !== 'all') {
                 filteredDeals = filteredDeals.filter(deal => deal.source === sourceFilter);
             }
             
-            // Tri: Afficher les RDV passés en premier
             filteredDeals.sort((a, b) => {
                 const aPast = a.dateRDV && isPastDate(a.dateRDV);
                 const bPast = b.dateRDV && isPastDate(b.dateRDV);
-                
                 if (aPast && !bPast) return -1; 
                 if (!aPast && bPast) return 1;  
-                
                 return 0; 
             });
-
 
             updateDashboardMetrics(filteredDeals);
             renderDeals(filteredDeals);
         }
         
-        // Écouteurs pour les filtres
         filterStatus.addEventListener('change', applyFiltersAndRender);
         filterRdvPast.addEventListener('change', applyFiltersAndRender);
         filterSource.addEventListener('change', applyFiltersAndRender);
@@ -345,18 +287,14 @@
             applyFiltersAndRender();
         });
 
-
-        // --- Gestion des événements du Formulaire ---
-
         dealForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-
             const nomPrenom = document.getElementById('nomPrenom').value.trim();
             const source = document.getElementById('source').value;
             const newCommentText = newCommentField.value.trim();
             
             if (!nomPrenom || !source) {
-                alertUser("Veuillez remplir les champs obligatoires (Nom Prénom et Source).", 'warning');
+                alertUser("Veuillez remplir les champs obligatoires.", 'warning');
                 return;
             }
 
@@ -364,10 +302,11 @@
                 id: editingId,
                 nomPrenom,
                 source,
+                // Nouveau champ Entrepreneur
+                entrepreneur: document.getElementById('entrepreneur').value.trim(),
                 email: document.getElementById('email').value.trim(),
                 numero: document.getElementById('numero').value.trim(),
                 dateRDV: document.getElementById('dateRDV').value,
-                entrepreneur: document.getElementById('entrepreneur').checked,
                 ghost: document.getElementById('ghost').checked,
                 aFollowUp: document.getElementById('aFollowUp').checked,
                 nonClose: document.getElementById('nonClose').checked,
@@ -378,40 +317,33 @@
                 mensualite: parseFloat(document.getElementById('mensualite').value) || 0,
                 compta: document.getElementById('compta').checked,
                 enregistrementCall: document.getElementById('enregistrementCall').value.trim(),
-                
                 newCommentText: editingId ? newCommentText : null,
                 commentaireHistory: !editingId ? newCommentText : null 
             };
 
             let action = editingId ? 'UPDATE' : 'CREATE';
-            
             const result = await fetchAppsScript(action, dealData);
 
             if (result.success) {
-                alertUser(`Deal pour "${nomPrenom}" ${editingId ? 'mis à jour' : 'ajouté'} avec succès.`, 'success');
+                alertUser(`Deal pour "${nomPrenom}" enregistré.`, 'success');
                 resetForm();
                 await loadDeals(); 
             } else {
-                alertUser(`Échec de l'opération: ${result.error}`, 'error');
+                alertUser(`Échec: ${result.error}`, 'error');
             }
         });
 
-        // --- Fonctions de Modification et Suppression ---
-
         window.editDeal = async function(id) {
             const deal = allDealsCache.find(d => d.id === id);
-            if (!deal) {
-                alertUser("Deal non trouvé.", 'error');
-                return;
-            }
+            if (!deal) return;
 
-            // Remplir le formulaire
             document.getElementById('nomPrenom').value = deal.nomPrenom || '';
             document.getElementById('source').value = deal.source || '';
             document.getElementById('email').value = deal.email || '';
             document.getElementById('numero').value = deal.numero || '';
             document.getElementById('dateRDV').value = deal.dateRDV || '';
-            document.getElementById('entrepreneur').checked = deal.entrepreneur || false;
+            // Remplir le champ texte Entrepreneur
+            document.getElementById('entrepreneur').value = deal.entrepreneur || '';
             document.getElementById('ghost').checked = deal.ghost || false;
             document.getElementById('aFollowUp').checked = deal.aFollowUp || false;
             document.getElementById('nonClose').checked = deal.nonClose || false;
@@ -423,32 +355,25 @@
             document.getElementById('compta').checked = deal.compta || false;
             document.getElementById('enregistrementCall').value = deal.enregistrementCall || '';
             
-            // Afficher l'historique et préparer le nouveau commentaire
             newCommentField.value = '';
-            newCommentField.placeholder = 'Ajouter un nouveau commentaire de suivi...';
             displayCommentHistory(deal.commentaireHistory);
 
-            // Mettre à jour l'état de l'interface utilisateur
             editingId = id;
-            formTitle.textContent = `Modifier le Deal: ${deal.nomPrenom}`;
-            submitText.textContent = 'Enregistrer les Modifications';
+            formTitle.textContent = `Modifier: ${deal.nomPrenom}`;
+            submitText.textContent = 'Enregistrer';
             cancelEditBtn.classList.remove('hidden');
-            window.scrollTo({ top: 0, behavior: 'smooth' }); // Scroll vers le formulaire
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
         window.deleteDeal = async function(id, nomPrenom) {
-            if (!await showCustomConfirmation(`Voulez-vous vraiment supprimer le deal pour "${nomPrenom}" ?`)) {
-                return;
-            }
-
+            if (!await showCustomConfirmation(`Supprimer "${nomPrenom}" ?`)) return;
             const result = await fetchAppsScript('DELETE', { id });
-
             if (result.success) {
-                alertUser(`Deal pour "${nomPrenom}" supprimé avec succès.`, 'success');
+                alertUser(`Supprimé.`, 'success');
                 if (editingId === id) resetForm();
-                await loadDeals(); // Recharger les données
+                await loadDeals();
             } else {
-                alertUser(`Échec de la suppression: ${result.error}`, 'error');
+                alertUser(`Erreur: ${result.error}`, 'error');
             }
         }
         
@@ -460,15 +385,12 @@
             formTitle.textContent = 'Ajouter un Nouveau Deal';
             submitText.textContent = 'Ajouter le Deal';
             cancelEditBtn.classList.add('hidden');
-            newCommentField.placeholder = 'Ajouter une note de suivi pour ce call...';
+            newCommentField.placeholder = 'Ajouter une note...';
             document.getElementById('comment-history').classList.add('hidden');
-            document.getElementById('history-content').innerHTML = '';
         }
 
-        // --- Fonctions d'Affichage et d'Ergonomie ---
-
         function updateDashboardMetrics(deals) {
-            metricTotal.textContent = allDealsCache.length; // Montrer le total non filtré
+            metricTotal.textContent = allDealsCache.length;
             metricFollowUp.textContent = allDealsCache.filter(l => l.aFollowUp).length;
             metricClosed.textContent = allDealsCache.filter(l => l.close).length;
         }
@@ -476,10 +398,8 @@
         function renderDeals(deals) {
             dealsTableBody.innerHTML = '';
             if (deals.length === 0) {
-                if (allDealsCache.length > 0) {
-                    dealsTableBody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-gray-500">Aucun deal ne correspond aux filtres actuels.</td></tr>`;
-                }
-                 return;
+                if (allDealsCache.length > 0) dealsTableBody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-gray-500">Aucun résultat.</td></tr>`;
+                return;
             }
 
             deals.forEach(deal => {
@@ -487,21 +407,14 @@
                 const hasPastRDV = deal.dateRDV && isPastDate(deal.dateRDV);
                 
                 let rowBgClass = '';
-                if (isClosed) {
-                    rowBgClass = 'bg-green-50/50';
-                } else if (deal.aFollowUp && hasPastRDV) {
-                    rowBgClass = 'bg-red-50/50'; 
-                } else if (hasPastRDV) {
-                    rowBgClass = 'bg-yellow-50/50';
-                }
+                if (isClosed) rowBgClass = 'bg-green-50/50';
+                else if (deal.aFollowUp && hasPastRDV) rowBgClass = 'bg-red-50/50'; 
+                else if (hasPastRDV) rowBgClass = 'bg-yellow-50/50';
                 
                 const row = document.createElement('tr');
                 row.className = `hover:bg-gray-100 transition duration-150 ${rowBgClass}`; 
 
-                const dateRDVDisplay = deal.dateRDV
-                    ? `<span class="${hasPastRDV ? 'text-red-600 font-bold' : 'text-blue-600'}">${new Date(deal.dateRDV).toLocaleDateString('fr-FR')}</span>`
-                    : 'N/A';
-
+                const dateRDVDisplay = deal.dateRDV ? `<span class="${hasPastRDV ? 'text-red-600 font-bold' : 'text-blue-600'}">${new Date(deal.dateRDV).toLocaleDateString('fr-FR')}</span>` : 'N/A';
                 const dashIcon = '—';
                 const flagsDisplay = `
                     <span class="p-1 rounded-full text-xs font-semibold ${deal.ghost ? 'bg-yellow-200 text-yellow-800' : 'bg-gray-100 text-gray-400'}" title="Ghost">${deal.ghost ? 'G' : dashIcon}</span>
@@ -509,35 +422,28 @@
                     <span class="p-1 rounded-full text-xs font-semibold ${deal.close ? 'bg-green-200 text-green-800 font-bold' : 'bg-red-200 text-red-800'}" title="Closé">${deal.close ? 'C' : (deal.nonClose ? 'N' : dashIcon)}</span>
                 `;
                 
-                const prixFormatte = deal.prix ? `${deal.prix.toLocaleString('fr-FR', { minimumFractionDigits: 0, maximumFractionDigits: 2 })} €` : 'N/A';
-                const mensualiteFormattee = deal.mensualite ? `${deal.mensualite.toLocaleString('fr-FR', { minimumFractionDigits: 0, maximumFractionDigits: 2 })} €` : 'N/A';
+                const prixFormatte = deal.prix ? `${deal.prix.toLocaleString('fr-FR')} €` : 'N/A';
                 
-                const paiementDisplay = deal.typePaiement 
-                    ? `Type: ${deal.typePaiement}<br><span class="text-xs text-gray-500">Mensualité: ${mensualiteFormattee}</span>`
-                    : 'N/A';
+                // Affichage Entrepreneur dans la première colonne
+                const entrepreneurDisplay = deal.entrepreneur ? `<div class="text-xs text-indigo-600 font-semibold mt-1">🏢 ${deal.entrepreneur}</div>` : '';
 
                 row.innerHTML = `
                     <td class="px-4 py-3 text-sm font-medium text-gray-900">
                         ${deal.nomPrenom}
                         <span class="text-xs text-gray-500 block">${deal.source}</span>
+                        ${entrepreneurDisplay}
                     </td>
                     <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">${dateRDVDisplay}</td>
                     <td class="px-4 py-3 text-sm text-gray-500">
                         ${deal.formation || 'N/A'}
                         <span class="font-bold text-blue-600 block">${prixFormatte}</span>
                     </td>
-                    <td class="px-4 py-3 text-sm text-gray-500">${paiementDisplay}</td>
+                    <td class="px-4 py-3 text-sm text-gray-500">${deal.typePaiement || 'N/A'}</td>
                     <td class="px-4 py-3 whitespace-nowrap text-xs space-x-1">${flagsDisplay}</td>
                     <td class="px-4 py-3 whitespace-nowrap text-right text-sm font-medium flex space-x-2 justify-end items-center">
-                        <button onclick="showHistoryModal('${deal.id}')" class="text-gray-500 hover:text-gray-900 p-2 rounded-lg hover:bg-gray-100 transition duration-150" title="Voir l'historique des commentaires">
-                            <svg class="w-5 h-5 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                        </button>
-                        <button onclick="editDeal('${deal.id}')" class="text-blue-600 hover:text-blue-900 p-2 rounded-lg hover:bg-blue-50 transition duration-150" title="Modifier">
-                            <svg class="w-5 h-5 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-7-10l5 5m-5-5L3 17"></path></svg>
-                        </button>
-                        <button onclick="deleteDeal('${deal.id}', '${deal.nomPrenom.replace(/'/g, "\\'")}')" class="text-red-600 hover:text-red-900 p-2 rounded-lg hover:bg-red-50 transition duration-150" title="Supprimer">
-                            <svg class="w-5 h-5 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                        </button>
+                        <button onclick="showHistoryModal('${deal.id}')" class="text-gray-500 hover:text-gray-900 p-2"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></button>
+                        <button onclick="editDeal('${deal.id}')" class="text-blue-600 hover:text-blue-900 p-2"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-7-10l5 5m-5-5L3 17"></path></svg></button>
+                        <button onclick="deleteDeal('${deal.id}', '${deal.nomPrenom.replace(/'/g, "\\'")}')" class="text-red-600 hover:text-red-900 p-2"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg></button>
                     </td>
                 `;
                 dealsTableBody.appendChild(row);
@@ -547,8 +453,7 @@
         window.showHistoryModal = function(id) {
             const deal = allDealsCache.find(l => l.id === id);
             if (!deal) return;
-            
-            modalHistoryContent.textContent = deal.commentaireHistory || 'Aucun historique de commentaire.';
+            modalHistoryContent.textContent = deal.commentaireHistory || 'Aucun historique.';
             historyModal.classList.remove('hidden');
             historyModal.classList.add('flex');
         }
@@ -559,12 +464,11 @@
         });
 
         function displayCommentHistory(historyString) {
-            const historyDiv = document.getElementById('history-content');
+            const historyDiv = document.getElementById('comment-history');
             if (historyString) {
-                historyDiv.textContent = historyString; 
-                document.getElementById('comment-history').classList.remove('hidden');
+                historyDiv.classList.remove('hidden');
             } else {
-                document.getElementById('comment-history').classList.add('hidden');
+                historyDiv.classList.add('hidden');
             }
         }
 
@@ -572,39 +476,19 @@
             if (!dateString) return false;
             const today = new Date();
             today.setHours(0, 0, 0, 0); 
-            const targetDate = new Date(dateString);
-            targetDate.setHours(0, 0, 0, 0);
-            return targetDate < today;
+            return new Date(dateString) < today;
         }
 
         function alertUser(message, type = 'info') {
             const id = 'toast-' + Date.now();
-            const colorMap = {
-                success: 'bg-green-500', error: 'bg-red-500', warning: 'bg-yellow-500', info: 'bg-blue-500'
-            };
-
+            const colorMap = { success: 'bg-green-500', error: 'bg-red-500', warning: 'bg-yellow-500', info: 'bg-blue-500' };
             const div = document.createElement('div');
             div.id = id;
             div.className = `fixed top-4 right-4 ${colorMap[type]} text-white p-4 rounded-lg shadow-xl transform transition-all duration-300 opacity-0 translate-y-4 z-50`;
             div.textContent = message;
-
-            if (!document.getElementById('toast-container')) {
-                const container = document.createElement('div');
-                container.id = 'toast-container';
-                container.className = 'fixed top-0 right-0 p-4 z-50 space-y-2';
-                document.body.appendChild(container);
-            }
-            document.getElementById('toast-container').appendChild(div);
-
-            setTimeout(() => {
-                div.classList.remove('opacity-0', 'translate-y-4');
-                div.classList.add('opacity-100', 'translate-y-0');
-            }, 10);
-
-            setTimeout(() => {
-                div.classList.add('opacity-0', 'translate-y-4');
-                div.addEventListener('transitionend', () => div.remove());
-            }, 5000);
+            document.body.appendChild(div);
+            setTimeout(() => { div.classList.remove('opacity-0', 'translate-y-4'); div.classList.add('opacity-100', 'translate-y-0'); }, 10);
+            setTimeout(() => { div.classList.add('opacity-0', 'translate-y-4'); div.addEventListener('transitionend', () => div.remove()); }, 5000);
         }
 
         function showCustomConfirmation(message) {
@@ -617,21 +501,14 @@
                 backdrop.appendChild(modal);
                 document.body.appendChild(backdrop);
                 setTimeout(() => modal.classList.replace('scale-90', 'scale-100'), 10);
-
-                const closeModal = () => {
-                    modal.classList.replace('scale-100', 'scale-90');
-                    backdrop.classList.add('opacity-0');
-                    backdrop.addEventListener('transitionend', () => backdrop.remove());
-                };
+                const closeModal = () => { modal.classList.replace('scale-100', 'scale-90'); backdrop.classList.add('opacity-0'); backdrop.addEventListener('transitionend', () => backdrop.remove()); };
                 document.getElementById('confirm-modal').onclick = () => { closeModal(); resolve(true); };
                 document.getElementById('cancel-modal').onclick = () => { closeModal(); resolve(false); };
                 backdrop.onclick = (e) => { if (e.target === backdrop) { closeModal(); resolve(false); } };
             });
         }
 
-        // Initialisation
         loadDeals();
-
     </script>
 </body>
 </html>
