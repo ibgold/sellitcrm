@@ -30,41 +30,41 @@
         .dark .glass-header { background: #1e293b; border-color: #334155; }
         .light .glass-header { background: #ffffff; border-color: #e2e8f0; }
 
-        /* --- INPUTS FORCÉS (High Contrast) --- */
+        /* --- INPUTS HAUTE VISIBILITÉ (Solid Box) --- */
+        .form-group label {
+            @apply block text-xs font-bold uppercase tracking-wide mb-1.5 ml-1 transition-colors;
+        }
+        .dark .form-group label { @apply text-slate-400; }
+        .light .form-group label { @apply text-slate-500; }
+
         .form-input { 
-            @apply block w-full rounded-md border-2 py-2.5 px-3 text-sm shadow-sm transition-all outline-none; 
+            @apply block w-full rounded-lg border-2 px-4 py-2.5 text-sm font-medium shadow-sm transition-all outline-none; 
         }
-        /* Mode Sombre : Fond Gris + Bordure Gris Clair visible */
         .dark .form-input { 
-            @apply bg-slate-800 border-slate-600 text-white placeholder-slate-500 focus:border-amber-500 focus:ring-1 focus:ring-amber-500; 
+            @apply bg-slate-800 border-slate-600 text-white placeholder-slate-500 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 hover:border-slate-500; 
         }
-        /* Mode Clair : Fond Blanc + Bordure Grise foncée */
         .light .form-input { 
-            @apply bg-white border-slate-300 text-slate-900 placeholder-slate-400 focus:border-indigo-600 focus:ring-1 focus:ring-indigo-600; 
+            @apply bg-white border-slate-300 text-slate-800 placeholder-slate-400 focus:border-indigo-600 focus:ring-1 focus:ring-indigo-600 hover:border-slate-400; 
         }
 
-        /* --- CHECKBOX PERSONNALISÉE (CUSTOM) --- */
-        /* On cache la vraie checkbox et on stylise le div frère */
-        .custom-checkbox-input { @apply sr-only; } /* sr-only cache l'input mais le garde accessible */
-        
+        /* --- CHECKBOXES CUSTOM --- */
+        .custom-checkbox-input { @apply sr-only; }
         .custom-checkbox-box {
             @apply h-5 w-5 rounded border-2 flex items-center justify-center transition-all duration-200;
         }
-        
-        /* Styles Checkbox Non-Cochée */
+        /* Non-Coché */
         .dark .custom-checkbox-box { @apply bg-slate-800 border-slate-500; }
         .light .custom-checkbox-box { @apply bg-white border-slate-400; }
-
-        /* Styles Checkbox Cochée (via le sibling selector de Tailwind 'peer-checked') */
+        /* Coché */
         .custom-checkbox-input:checked + .custom-checkbox-box {
-            @apply bg-amber-500 border-amber-500 text-white; /* Couleur active */
+            @apply bg-amber-500 border-amber-500 text-white;
         }
         .light .custom-checkbox-input:checked + .custom-checkbox-box {
             @apply bg-indigo-600 border-indigo-600 text-white;
         }
 
-        /* Status Card Wrapper */
-        .status-card { @apply flex items-center p-3 rounded-lg border-2 transition-all cursor-pointer shadow-sm select-none; }
+        /* Status Card */
+        .status-card { @apply flex items-center p-3 rounded-xl border-2 transition-all cursor-pointer shadow-sm select-none; }
         .dark .status-card { @apply border-slate-700 bg-slate-800/40 hover:bg-slate-700 hover:border-slate-500; }
         .light .status-card { @apply border-slate-200 bg-white hover:bg-slate-50 hover:border-indigo-200; }
 
@@ -93,12 +93,12 @@
                 <h1 class="text-3xl font-bold text-white tracking-tight">THOTH <span class="text-amber-500">CRM</span></h1>
             </div>
             <form id="login-form" class="space-y-5 text-left">
-                <div>
-                    <label class="block text-xs font-bold text-slate-400 uppercase mb-2 ml-1">Identifiant</label>
+                <div class="form-group">
+                    <label>Identifiant</label>
                     <input type="text" id="login-user" class="form-input" placeholder="Votre pseudo">
                 </div>
-                <div>
-                    <label class="block text-xs font-bold text-slate-400 uppercase mb-2 ml-1">Mot de passe</label>
+                <div class="form-group">
+                    <label>Mot de passe</label>
                     <input type="password" id="login-pass" class="form-input" placeholder="••••••••">
                 </div>
                 <div id="login-error" class="text-white bg-red-500/20 border border-red-500/50 p-3 rounded-lg text-xs hidden text-center font-bold"></div>
@@ -146,8 +146,8 @@
                     <div id="loading-indicator" class="hidden px-2.5 py-0.5 rounded-full dark:bg-indigo-500/20 dark:text-indigo-300 dark:border-indigo-500/30 bg-indigo-50 text-indigo-700 border-indigo-100 text-xs font-medium flex items-center"><svg class="animate-spin -ml-0.5 mr-1.5 h-3 w-3 dark:text-indigo-400 text-indigo-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>Sync...</div>
                 </div>
                 <div class="flex items-center gap-4">
-                    <div id="superadmin-selector-container" class="hidden"><select id="superadmin-org-selector" class="form-input py-1.5 text-xs font-bold cursor-pointer !w-40"><option value="">Choisir Client...</option></select></div>
-                    <div id="manager-selector-container" class="hidden"><select id="manager-view-selector" class="form-input py-1.5 text-xs font-bold cursor-pointer !w-40"><option value="ALL">Vue Globale</option></select></div>
+                    <div id="superadmin-selector-container" class="hidden"><select id="superadmin-org-selector" class="form-input !py-1.5 !text-xs font-bold cursor-pointer !w-40"><option value="">Choisir Client...</option></select></div>
+                    <div id="manager-selector-container" class="hidden"><select id="manager-view-selector" class="form-input !py-1.5 !text-xs font-bold cursor-pointer !w-40"><option value="ALL">Vue Globale</option></select></div>
                     <button onclick="openSlideOver()" id="btn-add-deal" class="group px-4 py-2 text-sm font-bold text-white bg-gradient-to-r from-amber-600 to-yellow-600 hover:from-amber-500 hover:to-yellow-500 dark:from-amber-600 dark:to-yellow-600 rounded-lg shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-0.5"><i class="fa-solid fa-plus mr-2"></i> Deal</button>
                 </div>
             </div>
@@ -197,7 +197,6 @@
                         <div class="px-6 py-4 border-b dark:border-slate-700 border-slate-100 dark:bg-slate-900/50 bg-slate-50"><h3 class="font-bold dark:text-white text-slate-800 flex items-center gap-2"><span class="w-1 h-4 bg-indigo-500 rounded-full"></span> Performance Mensuelle</h3></div>
                         <div class="overflow-x-auto"><table class="min-w-full text-sm"><thead class="dark:bg-black bg-slate-800 text-white"><tr><th class="p-3 text-left">Mois</th><th class="p-3 text-center">RDV</th><th class="p-3 text-center">Prés.</th><th class="p-3 text-center">%</th><th class="p-3 text-center">Wins</th><th class="p-3 text-center">% Conv.</th><th class="p-3 text-right">CA</th></tr></thead><tbody id="stats-month-body"></tbody></table></div>
                     </div>
-                    <!-- (Same for other stats tables) -->
                     <div class="dark:bg-slate-800 bg-white rounded-2xl shadow-sm border dark:border-slate-700 border-slate-200 overflow-hidden">
                         <div class="px-6 py-4 border-b dark:border-slate-700 border-slate-100 dark:bg-slate-900/50 bg-slate-50 flex justify-between items-center"><h3 class="font-bold dark:text-white text-slate-800 flex items-center gap-2"><span class="w-1 h-4 bg-amber-500 rounded-full"></span> Hebdomadaire</h3><select id="stats-weekly-month-filter" class="form-input !w-auto !py-1 !text-xs"><option value="all">Tout</option></select></div>
                         <div class="overflow-x-auto"><table class="min-w-full text-sm"><thead class="dark:bg-black bg-slate-800 text-white"><tr><th class="p-3 text-left">Semaine</th><th class="p-3 text-center opacity-80">RDV</th><th class="p-3 text-center opacity-80">Prés.</th><th class="p-3 text-center text-blue-400">% Prés.</th><th class="p-3 text-center text-emerald-400">Wins</th><th class="p-3 text-center text-indigo-400">% Conv.</th><th class="p-3 text-right text-amber-400">CA</th></tr></thead><tbody id="stats-weekly-body"></tbody></table></div>
@@ -222,53 +221,83 @@
                     <button onclick="closeSlideOver()" class="dark:text-slate-400 text-slate-500 dark:hover:text-white hover:text-slate-800 transition-colors p-2 rounded-full dark:hover:bg-white/5 hover:bg-slate-100"><i class="fa-solid fa-xmark text-lg"></i></button>
                 </div>
             </div>
+            
             <form id="deal-form" class="flex-1 flex flex-col overflow-y-auto custom-scroll dark:bg-slate-900 bg-white">
                 <div class="px-8 py-6 space-y-8">
+                    
+                    <!-- 1. IDENTITÉ -->
                     <div class="space-y-6">
-                        <div class="relative"><input type="text" id="nomPrenom" required class="form-input peer" placeholder=" "><label for="nomPrenom" class="form-label">Prospect <span class="text-red-500">*</span></label></div>
-                        <div class="grid grid-cols-2 gap-4"><div class="relative"><select id="source" required class="form-input peer pt-3 pb-2 dark:bg-slate-800"><option>Marketing</option><option>Setting</option><option>Prise de rdv</option><option>Autre</option></select><label for="source" class="form-label">Source</label></div><div class="relative"><input type="text" id="entrepreneur" class="form-input peer" placeholder=" "><label for="entrepreneur" class="form-label">Entrepreneur (F)</label></div></div>
-                        <div class="relative"><input type="date" id="dateRDV" class="form-input peer pt-3 pb-2 [color-scheme:light] dark:[color-scheme:dark]"><label for="dateRDV" class="form-label">Date RDV</label></div>
-                        <div class="grid grid-cols-2 gap-4"><div class="relative"><input type="email" id="email" class="form-input peer" placeholder=" "><label for="email" class="form-label">Email</label></div><div class="relative"><input type="text" id="numero" class="form-input peer" placeholder=" "><label for="numero" class="form-label">Téléphone</label></div></div>
-                        <div class="relative"><input type="url" id="enregistrementCall" class="form-input peer" placeholder=" "><label for="enregistrementCall" class="form-label">Lien Call (URL)</label></div>
+                        <div class="form-group"><label>Prospect <span class="text-red-500">*</span></label><input type="text" id="nomPrenom" required class="form-input" placeholder="Nom Complet"></div>
+
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="form-group">
+                                <label>Source</label>
+                                <select id="source" required class="form-input"><option class="dark:bg-slate-800">Marketing</option><option class="dark:bg-slate-800">Setting</option><option class="dark:bg-slate-800">Prise de rdv</option><option class="dark:bg-slate-800">Autre</option></select>
+                            </div>
+                            <div class="form-group">
+                                <label>Entrepreneur (F)</label>
+                                <input type="text" id="entrepreneur" class="form-input" placeholder="Nom">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Date RDV</label>
+                            <input type="date" id="dateRDV" class="form-input [color-scheme:light] dark:[color-scheme:dark]">
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="form-group"><label>Email</label><input type="email" id="email" class="form-input" placeholder="Email"></div>
+                            <div class="form-group"><label>Téléphone</label><input type="text" id="numero" class="form-input" placeholder="Tel"></div>
+                        </div>
+
+                        <div class="form-group"><label>Lien Call (URL)</label><input type="url" id="enregistrementCall" class="form-input" placeholder="https://..."></div>
                     </div>
 
-                    <!-- CUSTOM CHECKBOXES AREA -->
+                    <!-- 2. STATUTS (Nouveau Design Moderne & Solide) -->
                     <div class="dark:bg-slate-800/50 bg-slate-50 rounded-xl p-5 border-2 dark:border-slate-700 border-slate-200">
-                        <!-- Main Checkbox (Deal Closé) -->
-                        <label class="flex items-center cursor-pointer w-full p-3 dark:bg-emerald-500/10 bg-emerald-50 border-2 dark:border-emerald-500/30 border-emerald-200 rounded-lg hover:shadow-md transition-all mb-4 group">
-                            <input id="close" type="checkbox" class="custom-checkbox-input peer">
-                            <div class="custom-checkbox-box peer-checked:bg-emerald-500 peer-checked:border-emerald-500">
-                                <i class="fa-solid fa-check text-xs text-white opacity-0 peer-checked:opacity-100"></i>
-                            </div>
-                            <span class="ml-3 font-bold dark:text-emerald-400 text-emerald-800">✅ Deal Closé</span>
-                        </label>
-
-                        <div class="grid grid-cols-2 gap-3">
+                        <!-- Main Status -->
+                        <div class="mb-6">
+                             <label class="main-status-card group">
+                                <input id="close" type="checkbox" class="custom-checkbox-input peer">
+                                <div class="custom-checkbox-box peer-checked:bg-emerald-500 peer-checked:border-emerald-500">
+                                    <i class="fa-solid fa-check text-xs text-white opacity-0 peer-checked:opacity-100"></i>
+                                </div>
+                                <span class="ml-4 font-bold text-lg dark:text-emerald-400 text-emerald-700">Deal Closé</span>
+                            </label>
+                        </div>
+                        
+                        <!-- Others (Flex Wrap) -->
+                        <div class="flex flex-wrap gap-3">
                             <label class="status-card group">
                                 <input id="aFollowUp" type="checkbox" class="custom-checkbox-input peer">
                                 <div class="custom-checkbox-box peer-checked:bg-indigo-600 peer-checked:border-indigo-600"><i class="fa-solid fa-check text-[10px] text-white opacity-0 peer-checked:opacity-100"></i></div>
                                 <span class="ml-2 text-xs font-semibold dark:text-indigo-400 text-indigo-700 flex items-center gap-2"><i class="fa-solid fa-bolt"></i> Relance</span>
                             </label>
+
                             <label class="status-card group">
                                 <input id="ghost" type="checkbox" class="custom-checkbox-input peer">
                                 <div class="custom-checkbox-box peer-checked:bg-amber-500 peer-checked:border-amber-500"><i class="fa-solid fa-check text-[10px] text-white opacity-0 peer-checked:opacity-100"></i></div>
                                 <span class="ml-2 text-xs font-semibold dark:text-amber-500 text-amber-700 flex items-center gap-2"><i class="fa-solid fa-ghost"></i> Ghost</span>
                             </label>
+
                             <label class="status-card group">
                                 <input id="nonClose" type="checkbox" class="custom-checkbox-input peer">
                                 <div class="custom-checkbox-box peer-checked:bg-red-500 peer-checked:border-red-500"><i class="fa-solid fa-check text-[10px] text-white opacity-0 peer-checked:opacity-100"></i></div>
                                 <span class="ml-2 text-xs font-semibold dark:text-red-500 text-red-700 flex items-center gap-2"><i class="fa-solid fa-xmark"></i> Perdu</span>
                             </label>
+
                             <label class="status-card group">
                                 <input id="cancelled" type="checkbox" class="custom-checkbox-input peer">
                                 <div class="custom-checkbox-box peer-checked:bg-slate-500 peer-checked:border-slate-500"><i class="fa-solid fa-check text-[10px] text-white opacity-0 peer-checked:opacity-100"></i></div>
                                 <span class="ml-2 text-xs font-semibold dark:text-slate-400 text-slate-600 flex items-center gap-2"><i class="fa-solid fa-ban"></i> Annulé</span>
                             </label>
+
                             <label class="status-card group">
                                 <input id="unqualified" type="checkbox" class="custom-checkbox-input peer">
                                 <div class="custom-checkbox-box peer-checked:bg-orange-500 peer-checked:border-orange-500"><i class="fa-solid fa-check text-[10px] text-white opacity-0 peer-checked:opacity-100"></i></div>
                                 <span class="ml-2 text-xs font-semibold dark:text-orange-400 text-orange-600 flex items-center gap-2"><i class="fa-solid fa-user-slash"></i> Non Qualif</span>
                             </label>
+
                             <label class="status-card group">
                                 <input id="rescheduled" type="checkbox" class="custom-checkbox-input peer">
                                 <div class="custom-checkbox-box peer-checked:bg-blue-500 peer-checked:border-blue-500"><i class="fa-solid fa-check text-[10px] text-white opacity-0 peer-checked:opacity-100"></i></div>
@@ -277,15 +306,18 @@
                         </div>
                     </div>
 
+                    <!-- 3. DETAILS CLOSING -->
                     <div id="closing-details" class="hidden space-y-4 p-4 rounded-xl dark:bg-emerald-900/10 bg-emerald-50 border-2 dark:border-emerald-500/20 border-emerald-100 fade-in">
                         <div class="text-xs font-bold dark:text-emerald-500 text-emerald-700 uppercase tracking-wide flex items-center gap-2"><i class="fa-solid fa-coins"></i> Détails Vente</div>
-                        <select id="formation" class="form-input !bg-emerald-900/20 !border-emerald-500/30"><option class="dark:bg-slate-800" value="">Produit...</option><option class="dark:bg-slate-800" value="Produit B 4000">Produit B (4K)</option><option class="dark:bg-slate-800" value="Produit A 2000">Produit A (2K)</option><option class="dark:bg-slate-800" value="N/A">Autre</option></select>
-                        <div class="grid grid-cols-2 gap-4"><input type="number" id="prix" class="form-input !bg-emerald-900/20 !border-emerald-500/30" placeholder="Prix (€)"><input type="number" id="mensualite" class="form-input !bg-emerald-900/20 !border-emerald-500/30" placeholder="Mensualité"></div>
-                        <select id="typePaiement" class="form-input !bg-emerald-900/20 !border-emerald-500/30"><option class="dark:bg-slate-800" value="">Paiement...</option><option class="dark:bg-slate-800" value="CB">Carte Bancaire</option><option class="dark:bg-slate-800" value="Virement">Virement</option><option class="dark:bg-slate-800" value="3x">3 Fois</option><option class="dark:bg-slate-800" value="Intégral">Intégral</option></select>
+                        <div class="form-group"><label>Produit Vendu</label><select id="formation" class="form-input !bg-emerald-900/20 !border-emerald-500/30"><option class="dark:bg-slate-800" value="">Produit...</option><option class="dark:bg-slate-800" value="Produit B 4000">Produit B (4K)</option><option class="dark:bg-slate-800" value="Produit A 2000">Produit A (2K)</option><option class="dark:bg-slate-800" value="N/A">Autre</option></select></div>
+                        <div class="grid grid-cols-2 gap-4"><div class="form-group"><label>Prix (€)</label><input type="number" id="prix" class="form-input !bg-emerald-900/20 !border-emerald-500/30" placeholder="Prix (€)"></div><div class="form-group"><label>Mensualité</label><input type="number" id="mensualite" class="form-input !bg-emerald-900/20 !border-emerald-500/30" placeholder="Mensualité"></div></div>
+                        <div class="form-group"><label>Moyen de Paiement</label><select id="typePaiement" class="form-input !bg-emerald-900/20 !border-emerald-500/30"><option class="dark:bg-slate-800" value="">Paiement...</option><option class="dark:bg-slate-800" value="CB">Carte Bancaire</option><option class="dark:bg-slate-800" value="Virement">Virement</option><option class="dark:bg-slate-800" value="3x">3 Fois</option><option class="dark:bg-slate-800" value="Intégral">Intégral</option></select></div>
                     </div>
 
-                    <div><label class="block text-xs font-bold dark:text-slate-400 text-slate-500 uppercase mb-2">Note / Commentaire</label><textarea id="newComment" rows="3" class="form-input resize-none" placeholder="Ajouter une note..."></textarea><div id="comment-history" class="mt-4 hidden p-3 dark:bg-black/40 bg-slate-50 rounded-lg border dark:border-slate-700 border-slate-200 text-xs dark:text-slate-400 text-slate-600 max-h-32 overflow-y-auto"></div></div>
+                    <div class="form-group"><label>Note / Commentaire</label><textarea id="newComment" rows="3" class="form-input resize-none" placeholder="Ajouter une note..."></textarea><div id="comment-history" class="mt-4 hidden p-3 dark:bg-black/40 bg-slate-50 rounded-lg border dark:border-slate-700 border-slate-200 text-xs dark:text-slate-400 text-slate-600 max-h-32 overflow-y-auto"></div></div>
                 </div>
+                
+                <!-- FOOTER -->
                 <div class="p-6 border-t dark:border-slate-800 border-slate-200 flex justify-end gap-3 dark:bg-slate-900 bg-white sticky bottom-0">
                     <button type="button" onclick="closeSlideOver()" class="px-5 py-2.5 rounded-xl text-sm font-bold dark:text-slate-400 dark:hover:text-white dark:hover:bg-white/5 text-slate-500 hover:text-slate-800 hover:bg-slate-100 transition-colors">Annuler</button>
                     <button type="submit" id="submit-text" class="px-8 py-2.5 rounded-xl text-sm font-bold text-white bg-gradient-to-r from-amber-600 to-yellow-600 hover:from-amber-500 hover:to-yellow-500 shadow-lg shadow-amber-900/20 transition-all">Enregistrer</button>
@@ -296,6 +328,9 @@
 
     <!-- History Modal -->
     <div id="history-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4"><div class="absolute inset-0 dark:bg-black/80 bg-slate-900/40 backdrop-blur-sm" onclick="document.getElementById('history-modal').classList.add('hidden')"></div><div class="relative dark:bg-slate-900 bg-white border dark:border-white/10 border-slate-200 rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden"><div class="p-4 border-b dark:border-white/10 border-slate-100 font-bold dark:text-white text-slate-800">Historique Complet</div><div id="modal-history-content" class="p-6 text-sm dark:text-slate-300 text-slate-600 max-h-96 overflow-y-auto dark:bg-slate-800/50 bg-slate-50"></div><div class="p-4 border-t dark:border-white/10 border-slate-100 flex justify-end"><button onclick="document.getElementById('history-modal').classList.add('hidden')" class="text-sm font-bold dark:text-slate-400 text-slate-500 hover:text-slate-800 dark:hover:text-white">Fermer</button></div></div></div>
+
+    <!-- Debug -->
+    <pre id="debug-console" class="hidden"></pre>
 
     <script>
         const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzZzTCbYR2H4jsGfrZt60oxhmwgf8D_wS8QSgO4GggLoECqsPP9LctDITbWgb6oBZQh/exec'; 
@@ -340,7 +375,8 @@
         async function fetchAppsScript(action, data = {}) {
             if(action !== 'LOGIN') data.targetSheetId = currentSheetId; if (action === 'READ' && currentSheetId === 'ALL' && currentUser) data.org = currentUser.org; 
             if (action !== 'READ' && action !== 'LOGIN') { const btn = document.getElementById('submit-text'); if(btn) { btn.disabled = true; btn.innerHTML = 'Traitement...'; } }
-            try { const response = await fetch(APPS_SCRIPT_URL, { method: 'POST', mode: 'cors', cache: 'no-cache', headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify({ action, ...data }) }); const text = await response.text(); let result = JSON.parse(text); if (!result.success) throw new Error(result.error || result.message); return result; } catch (error) { console.error(error); return { success: false, error: error.message }; } finally { if (action !== 'READ' && action !== 'LOGIN') { const btn = document.getElementById('submit-text'); if(btn) { btn.disabled = false; btn.textContent = "Enregistrer"; } } }
+            try { const response = await fetch(APPS_SCRIPT_URL, { method: 'POST', mode: 'cors', cache: 'no-cache', headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify({ action, ...data }) }); const text = await response.text(); let result; try { result = JSON.parse(text); } catch(e) { throw new Error("Réponse serveur invalide"); }
+            if (!result.success) throw new Error(result.error || result.message); return result; } catch (error) { console.error(error); return { success: false, error: error.message }; } finally { if (action !== 'READ' && action !== 'LOGIN') { const btn = document.getElementById('submit-text'); if(btn) { btn.disabled = false; btn.textContent = "Enregistrer"; } } }
         }
 
         async function loadDeals() {
