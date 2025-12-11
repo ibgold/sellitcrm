@@ -10,7 +10,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root { color-scheme: dark; }
-        /* Suppression des styles .light spécifiques car le mode est forcé en dark */
         body { font-family: 'Outfit', sans-serif; background: #0f172a; color: #cbd5e1; }
         .custom-scroll::-webkit-scrollbar { width: 6px; } .custom-scroll::-webkit-scrollbar-track { background: transparent; } .custom-scroll::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
         .glass-header { border-bottom: 1px solid; transition: all 0.3s; background: #1e293b; border-color: #334155; }
@@ -65,7 +64,6 @@
                         <span class="text-[10px] dark:bg-amber-500/20 dark:text-amber-400 px-2 py-0.5 rounded border dark:border-amber-500/30 bg-indigo-100 text-indigo-700 border-indigo-200" id="role-display">Role</span>
                     </div>
                     <div class="flex gap-2">
-                        <!-- THEME TOGGLE SUPPRIMÉ -->
                         <button onclick="logout()" class="flex-1 py-2 text-xs text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:text-white dark:hover:bg-red-500/20 rounded-lg border dark:border-red-500/10 border-red-100 transition-colors">Déconnexion</button>
                     </div>
                     <p class="text-[10px] text-slate-600 mt-2 text-center truncate font-mono" id="org-display">Org</p>
@@ -106,11 +104,16 @@
                     <!-- TABLE -->
                     <div class="dark:bg-slate-800 bg-white shadow-sm rounded-2xl border dark:border-slate-700 border-slate-200 overflow-hidden">
                         <div class="p-4 border-b dark:border-slate-700 border-slate-200 flex gap-3 overflow-x-auto items-center">
-                            <!-- FILTRE MOIS MODIFIÉ -->
+                            <!-- SEARCH BAR -->
+                            <div class="relative mr-2">
+                                <input type="text" id="search-bar" placeholder="Rechercher un prospect..." class="form-input !w-60 !py-2 !pl-9 !text-xs font-medium">
+                                <i class="fa-solid fa-search absolute left-3 top-2.5 text-slate-500 text-xs"></i>
+                            </div>
+                            
                             <select id="filter-month" class="form-input !w-auto !py-2 !pl-3 !pr-8">
                                 <option value="all" selected>Tout l'historique</option>
                                 <option value="current">Ce mois</option>
-                                <option value="week">Cette semaine</option> <!-- AJOUTÉ -->
+                                <option value="week">Cette semaine</option> 
                             </select>
                             <select id="filter-status" class="form-input !w-auto !py-2 !pl-3 !pr-8">
                                 <option value="all">Tous statuts</option><option value="followup">⚡ Relance</option><option value="closed">💰 Closé</option><option value="cancelled">🚫 Annulé</option><option value="unqualified">💩 Non Qualif</option><option value="rescheduled">📅 Reporté</option>
@@ -129,26 +132,22 @@
                     </div>
                 </div>
 
-                <!-- VIEW: STATS (REFONTE VISUELLE) -->
+                <!-- VIEW: STATS -->
                 <div id="view-stats" class="hidden space-y-6 fade-in">
                     <!-- LIGNE 1 : KPIS INTELLIGENTS & LISIBLES -->
                     <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                        <!-- KPI CA SIGNÉ : Design épuré, fond foncé, bordure colorée -->
                         <div class="dark:bg-slate-800 bg-white p-5 rounded-2xl border dark:border-amber-500/50 border-slate-200 border-l-4 shadow-lg relative overflow-hidden">
                             <div class="absolute top-0 right-0 p-3 opacity-10"><i class="fa-solid fa-file-contract text-6xl text-amber-500"></i></div>
                             <p class="text-xs font-bold uppercase text-amber-500 mb-1">CA Signé Total</p>
                             <p class="text-3xl font-extrabold dark:text-white text-slate-800" id="report-ca-sign">0 €</p>
                             <p class="text-[10px] text-slate-400 mt-2 font-medium">Montant total des contrats</p>
                         </div>
-
-                        <!-- KPI CASH IN : Design épuré, fond foncé, bordure colorée -->
                         <div class="dark:bg-slate-800 bg-white p-5 rounded-2xl border dark:border-emerald-500/50 border-slate-200 border-l-4 shadow-lg relative overflow-hidden">
                             <div class="absolute top-0 right-0 p-3 opacity-10"><i class="fa-solid fa-sack-dollar text-6xl text-emerald-500"></i></div>
                             <p class="text-xs font-bold uppercase text-emerald-500 mb-1">Cash In (Réel)</p>
                             <p class="text-3xl font-extrabold dark:text-white text-slate-800" id="report-ca-cash">0 €</p>
                             <p class="text-[10px] text-slate-400 mt-2 font-medium" id="report-collection-rate">Taux d'encaissement: 0%</p>
                         </div>
-
                         <div class="dark:bg-slate-800 bg-white p-5 rounded-2xl border dark:border-slate-700 border-slate-200">
                             <p class="text-xs font-bold uppercase text-indigo-400 flex items-center gap-2"><i class="fa-solid fa-bullseye"></i> Taux de Closing</p>
                             <div class="flex items-end gap-2 mt-2">
@@ -166,7 +165,6 @@
 
                     <!-- LIGNE 2 : CHARTS ANALYTIQUES -->
                     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                        <!-- Chart Evolution (2/3 largeur) -->
                         <div class="lg:col-span-2 dark:bg-slate-800 bg-white p-6 rounded-2xl border dark:border-slate-700 border-slate-200 flex flex-col">
                             <div class="flex justify-between items-center mb-4">
                                 <h3 class="font-bold dark:text-white text-slate-800 text-sm uppercase tracking-wide flex items-center gap-2"><i class="fa-solid fa-chart-area text-slate-500"></i> Performance Financière</h3>
@@ -177,8 +175,6 @@
                             </div>
                             <div class="flex-1 min-h-[250px]"><canvas id="chart-finance"></canvas></div>
                         </div>
-
-                        <!-- Chart Raisons (1/3 largeur) -->
                         <div class="dark:bg-slate-800 bg-white p-6 rounded-2xl border dark:border-slate-700 border-slate-200 flex flex-col">
                             <h3 class="font-bold dark:text-white text-slate-800 text-sm uppercase tracking-wide mb-4 flex items-center gap-2"><i class="fa-solid fa-chart-pie text-slate-500"></i> Analyse des Échecs</h3>
                             <div class="flex-1 min-h-[200px] relative"><canvas id="chart-reasons"></canvas></div>
@@ -210,6 +206,31 @@
 
                 <!-- VIEW: SETTINGS -->
                 <div id="view-settings" class="hidden space-y-8 fade-in">
+                    <!-- SECTION ADMIN : TABLEAU DE BORD ÉQUIPE (NOUVEAU) -->
+                    <div id="settings-admin-section" class="hidden dark:bg-slate-800 bg-white rounded-2xl shadow-sm border dark:border-slate-700 border-slate-200 p-6 border-l-4 border-l-purple-500">
+                        <div class="flex justify-between items-center mb-6">
+                            <div>
+                                <h3 class="text-lg font-bold dark:text-white text-slate-800">👥 Console Utilisateurs</h3>
+                                <p class="text-xs text-slate-500">Gérez les accès et les rôles de votre équipe.</p>
+                            </div>
+                            <button onclick="openUserModal()" class="px-4 py-2 bg-purple-600 hover:bg-purple-500 text-white rounded-lg font-bold text-xs transition-colors flex items-center gap-2"><i class="fa-solid fa-user-plus"></i> Nouveau Utilisateur</button>
+                        </div>
+                        <div class="overflow-x-auto rounded-xl border dark:border-slate-700 border-slate-200">
+                            <table class="min-w-full text-sm text-left">
+                                <thead class="dark:bg-slate-900 bg-slate-100 uppercase text-xs font-bold dark:text-slate-400 text-slate-600">
+                                    <tr>
+                                        <th class="p-4">Identifiant</th>
+                                        <th class="p-4">Nom</th>
+                                        <th class="p-4">Rôle</th>
+                                        <th class="p-4">Organisation</th>
+                                        <th class="p-4 text-right">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="admin-users-body" class="divide-y dark:divide-slate-700 divide-slate-200 bg-slate-50 dark:bg-slate-800/50"></tbody>
+                            </table>
+                        </div>
+                    </div>
+
                     <!-- SECTION REGLES TARIFAIRES -->
                     <div class="dark:bg-slate-800 bg-white rounded-2xl shadow-sm border dark:border-slate-700 border-slate-200 p-6 border-l-4 border-l-emerald-500">
                         <div class="flex justify-between items-center mb-6">
@@ -273,6 +294,10 @@
                     </div>
                     <div class="pt-4 border-t dark:border-slate-800 border-slate-100"><label class="text-[10px] font-bold uppercase tracking-wider dark:text-slate-400 text-slate-500 mb-3 block">Statut du Deal</label><div class="hidden"><input id="close" type="checkbox"><input id="aFollowUp" type="checkbox"><input id="ghost" type="checkbox"><input id="nonClose" type="checkbox"><input id="cancelled" type="checkbox"><input id="unqualified" type="checkbox"><input id="rescheduled" type="checkbox"></div><div class="grid grid-cols-2 gap-2 mb-2"><div onclick="setDealStatus('aFollowUp')" id="btn-status-aFollowUp" class="status-pill hover:bg-indigo-500/10 hover:text-indigo-400 hover:border-indigo-500/50"><i class="fa-solid fa-bolt"></i> Relance</div><div onclick="setDealStatus('rescheduled')" id="btn-status-rescheduled" class="status-pill hover:bg-blue-500/10 hover:text-blue-400 hover:border-blue-500/50"><i class="fa-regular fa-calendar"></i> Reporté</div><div onclick="setDealStatus('ghost')" id="btn-status-ghost" class="status-pill hover:bg-amber-500/10 hover:text-amber-400 hover:border-amber-500/50"><i class="fa-solid fa-ghost"></i> Ghost</div><div onclick="setDealStatus('unqualified')" id="btn-status-unqualified" class="status-pill hover:bg-orange-500/10 hover:text-orange-400 hover:border-orange-500/50"><i class="fa-solid fa-user-slash"></i> Non Qualifié</div><div onclick="setDealStatus('nonClose')" id="btn-status-nonClose" class="status-pill hover:bg-red-500/10 hover:text-red-400 hover:border-red-500/50"><i class="fa-solid fa-xmark"></i> Perdu</div><div onclick="setDealStatus('cancelled')" id="btn-status-cancelled" class="status-pill hover:bg-slate-500/10 hover:text-slate-300 hover:border-slate-500/50"><i class="fa-solid fa-ban"></i> Annulé</div></div><div onclick="setDealStatus('close')" id="btn-status-close" class="status-pill w-full mt-2 py-3 bg-gradient-to-r from-emerald-900/50 to-emerald-800/50 border border-emerald-500/30 text-emerald-400 hover:from-emerald-600 hover:to-emerald-500 hover:text-white transition-all shadow-lg hover:shadow-emerald-500/20"><span class="text-sm font-bold uppercase tracking-widest flex items-center gap-2"><i class="fa-solid fa-check-circle"></i> Deal Closé</span></div></div>
                     
+                    <div class="mt-4 pt-4 border-t dark:border-slate-800 border-slate-100">
+                        <div class="form-group"><label class="text-indigo-400">📅 Planifier la Relance</label><input type="date" id="dateRelance" class="form-input [color-scheme:light] dark:[color-scheme:dark]"></div>
+                    </div>
+
                     <!-- SECTION CLOSING (Prop 2 & 3 Integration) -->
                     <div id="closing-details" class="hidden space-y-4 pt-4 border-t border-emerald-500/30 fade-in">
                         <div class="p-4 rounded-xl dark:bg-emerald-500/5 border border-emerald-500/20 relative overflow-hidden">
@@ -315,22 +340,44 @@
         </div>
     </div>
 
+    <!-- USER MODAL (NOUVEAU) -->
+    <div id="user-modal" class="hidden fixed inset-0 z-[60] flex items-center justify-center p-4">
+        <div class="absolute inset-0 dark:bg-black/80 bg-slate-900/40 backdrop-blur-sm" onclick="closeUserModal()"></div>
+        <div class="relative dark:bg-slate-900 bg-white border dark:border-white/10 border-slate-200 rounded-2xl shadow-2xl w-full max-w-md overflow-hidden p-6">
+            <h3 class="text-lg font-bold dark:text-white text-slate-800 mb-6">Ajouter un Utilisateur</h3>
+            <form id="create-user-form" class="space-y-4">
+                <div class="form-group"><label>Identifiant (Login)</label><input type="text" id="new-user-login" class="form-input" required placeholder="ex: thomas"></div>
+                <div class="form-group"><label>Mot de passe</label><input type="text" id="new-user-pass" class="form-input" required placeholder="1234"></div>
+                <div class="form-group"><label>Nom Complet</label><input type="text" id="new-user-name" class="form-input" required placeholder="Thomas Durand"></div>
+                <div class="form-group"><label>Organisation</label><input type="text" id="new-user-org" class="form-input" required placeholder="Nom Client"></div>
+                <div class="form-group"><label>Rôle</label><select id="new-user-role" class="form-input"><option value="closer">Closer</option><option value="manager">Manager</option><option value="admin">Admin</option></select></div>
+                <div class="form-group"><label>Sheet ID (Fichier)</label><input type="text" id="new-user-sheet" class="form-input" required placeholder="ID Google Sheet..."></div>
+                <div class="flex justify-end gap-2 mt-6">
+                    <button type="button" onclick="closeUserModal()" class="px-4 py-2 text-slate-400 hover:text-white text-sm font-bold">Annuler</button>
+                    <button type="submit" class="px-6 py-2 bg-purple-600 hover:bg-purple-500 text-white rounded-lg font-bold text-sm transition-colors">Créer</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- History Modal -->
     <div id="history-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4"><div class="absolute inset-0 dark:bg-black/80 bg-slate-900/40 backdrop-blur-sm" onclick="document.getElementById('history-modal').classList.add('hidden')"></div><div class="relative dark:bg-slate-900 bg-white border dark:border-white/10 border-slate-200 rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden"><div class="p-4 border-b dark:border-white/10 border-slate-100 font-bold dark:text-white text-slate-800">Historique Complet</div><div id="modal-history-content" class="p-6 text-sm dark:text-slate-300 text-slate-600 max-h-96 overflow-y-auto dark:bg-slate-800/50 bg-slate-50"></div><div class="p-4 border-t dark:border-white/10 border-slate-100 flex justify-end"><button onclick="document.getElementById('history-modal').classList.add('hidden')" class="text-sm font-bold dark:text-slate-400 text-slate-500 hover:text-slate-800 dark:hover:text-white">Fermer</button></div></div></div>
     
     <script>
-        // URL du script Google Apps (API Backend)
         const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzZzTCbYR2H4jsGfrZt60oxhmwgf8D_wS8QSgO4GggLoECqsPP9LctDITbWgb6oBZQh/exec'; 
         
         window.switchView = function(viewId) { 
             ['dashboard', 'stats', 'settings'].forEach(v => document.getElementById(`view-${v}`).classList.add('hidden')); 
             document.getElementById(`view-${viewId}`).classList.remove('hidden'); 
-            const titles = { dashboard: 'Pipeline', stats: 'Statistiques', settings: 'Paramètres' }; 
+            const titles = { dashboard: 'Pipeline', stats: 'Business Intelligence', settings: 'Paramètres' }; 
             document.getElementById('page-title').textContent = titles[viewId]; 
             const act = document.getElementById('topbar-actions'); 
             if(viewId === 'dashboard') act.classList.remove('hidden'); else act.classList.add('hidden'); 
             if(viewId === 'stats') updateReports(); 
-            if(viewId === 'settings') renderSettingsView(); 
+            if(viewId === 'settings') {
+                renderSettingsView(); 
+                if(currentUser && currentUser.role === 'super_admin') loadUsers(); // CHARGER LES UTILISATEURS
+            }
         };
         
         window.openSlideOver = function(isEdit = false) { 
@@ -386,9 +433,91 @@
                 formation: document.getElementById('formation').value, prix: document.getElementById('prix').value, typePaiement: document.getElementById('typePaiement').value, mensualite: document.getElementById('mensualite').value,
                 // New Fields
                 reste: document.getElementById('reste').value, nbMens: document.getElementById('nbMens').value, jour: document.getElementById('jour').value,
-                enregistrementCall: document.getElementById('enregistrementCall').value, newCommentText: document.getElementById('newComment').value
+                enregistrementCall: document.getElementById('enregistrementCall').value, newCommentText: document.getElementById('newComment').value,
+                dateRelance: document.getElementById('dateRelance').value // AJOUT CHAMP RELANCE
             };
             try { const res = await fetchAppsScript(editingId ? 'UPDATE' : 'CREATE', { data: dealData }); if(res.success) { closeSlideOver(); loadDeals(); } else { alert("Erreur: " + res.message); } } catch(err) { alert("Erreur réseau: " + err.message); } finally { btn.disabled = false; btn.innerHTML = originalText; }
+        });
+
+        // LISTENER RECHERCHE
+        document.getElementById('search-bar').addEventListener('keyup', (e) => {
+            const term = e.target.value.toLowerCase();
+            const filtered = allDealsCache.filter(d => 
+                (d.nomPrenom && String(d.nomPrenom).toLowerCase().includes(term)) ||
+                (d.email && String(d.email).toLowerCase().includes(term)) ||
+                (d.numero && String(d.numero).toLowerCase().includes(term))
+            );
+            // On bypass applyFilters pour la recherche directe, ou on l'intègre. 
+            // Ici je fais simple : si recherche, on affiche le résultat brut filtré
+            if(term.length > 0) {
+                renderTable(filtered);
+            } else {
+                applyFilters(); // Retour aux filtres normaux
+            }
+        });
+
+        // --- GESTION UTILISATEURS (JS) ---
+        window.openUserModal = function() { document.getElementById('user-modal').classList.remove('hidden'); document.getElementById('create-user-form').reset(); }
+        window.closeUserModal = function() { document.getElementById('user-modal').classList.add('hidden'); }
+        
+        window.loadUsers = async function() {
+            try {
+                const res = await fetchAppsScript('GET_USERS');
+                if(res.success) {
+                    const tbody = document.getElementById('admin-users-body');
+                    tbody.innerHTML = '';
+                    res.users.forEach(u => {
+                        tbody.innerHTML += `
+                        <tr class="hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">
+                            <td class="p-4 font-bold dark:text-white text-slate-800">${u.username}</td>
+                            <td class="p-4 dark:text-slate-300 text-slate-600">${u.name}</td>
+                            <td class="p-4"><span class="px-2 py-1 rounded text-xs font-bold bg-slate-200 dark:bg-slate-600 uppercase">${u.role}</span></td>
+                            <td class="p-4 dark:text-slate-300 text-slate-600">${u.org}</td>
+                            <td class="p-4 text-right">
+                                <button onclick="deleteUser('${u.username}')" class="text-red-500 hover:text-red-700 hover:bg-red-100 dark:hover:bg-red-900/30 p-2 rounded-lg transition-colors"><i class="fa-solid fa-trash"></i></button>
+                            </td>
+                        </tr>`;
+                    });
+                }
+            } catch(e) { console.error("Erreur chargement users", e); }
+        }
+
+        window.deleteUser = async function(username) {
+            if(!confirm(`Supprimer définitivement l'utilisateur ${username} ?`)) return;
+            try {
+                const res = await fetchAppsScript('DELETE_USER', { username: username });
+                if(res.success) { loadUsers(); } else { alert("Erreur: " + res.message); }
+            } catch(e) { alert("Erreur réseau"); }
+        }
+
+        // Listener for Create User Form
+        document.getElementById('create-user-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if(currentUser.role !== 'super_admin') return;
+            
+            const userData = {
+                username: document.getElementById('new-user-login').value,
+                password: document.getElementById('new-user-pass').value,
+                name: document.getElementById('new-user-name').value,
+                org: document.getElementById('new-user-org').value,
+                role: document.getElementById('new-user-role').value,
+                sheetId: document.getElementById('new-user-sheet').value
+            };
+
+            if(!confirm(`Créer l'utilisateur ${userData.username} ?`)) return;
+
+            try {
+                const res = await fetchAppsScript('CREATE_USER', { userData: userData });
+                if(res.success) {
+                    alert('Utilisateur créé !');
+                    closeUserModal();
+                    loadUsers(); 
+                } else {
+                    alert('Erreur: ' + res.message);
+                }
+            } catch(err) {
+                alert('Erreur réseau');
+            }
         });
 
         window.editDeal = function(id) { 
@@ -399,6 +528,7 @@
             document.getElementById('formation').value = d.formation || ''; document.getElementById('prix').value = d.prix || ''; document.getElementById('typePaiement').value = d.typePaiement || ''; document.getElementById('mensualite').value = d.mensualite || ''; 
             // Fill new fields
             document.getElementById('reste').value = d.reste || ''; document.getElementById('nbMens').value = d.nbMens || ''; document.getElementById('jour').value = d.jour || '';
+            document.getElementById('dateRelance').value = d.dateRelance ? d.dateRelance.split('T')[0] : ''; // REMPLISSAGE RELANCE
             
             const hist = document.getElementById('comment-history'); hist.classList.remove('hidden'); if(d.commentaireHistory && d.commentaireHistory.trim() !== "") { hist.innerHTML = '<p class="text-[10px] font-bold uppercase text-slate-400 mb-2">📜 Historique des échanges :</p>' + d.commentaireHistory.replace(/\n/g, '<br>'); } else { hist.innerHTML = '<p class="text-[10px] font-bold uppercase text-slate-400 mb-2">📜 Historique des échanges :</p><p class="text-xs italic text-slate-500">Aucun historique disponible.</p>'; }
             document.getElementById('newComment').value = ''; document.getElementById('slide-over-title').textContent = "Modifier le Deal"; document.getElementById('submit-text').innerHTML = "<span>Mettre à jour</span> <i class='fa-solid fa-rotate'></i>"; window.openSlideOver(true); 
@@ -407,23 +537,15 @@
         // --- CORRECTION DE LA FONCTION DELETE AVEC LOGS ---
         window.deleteDeal = async function(id) { 
             if(!confirm("Supprimer ce deal définitivement ?")) return; 
-            
-            // On logue l'action pour le débogage
             console.log("Tentative de suppression pour ID:", id);
-            
             const res = await fetchAppsScript('DELETE', { data: { id: id } }); 
-            
             console.log("Résultat suppression:", res);
-
-            // Correction: On vérifie res.success et on affiche une erreur explicite sinon
             if(res.success) {
                 loadDeals(); 
             } else { 
-                // On affiche res.message OU res.error pour éviter les "undefined"
                 alert("Erreur suppression: " + (res.message || res.error || "Erreur inconnue")); 
             } 
         };
-        // ----------------------------------------------------
 
         window.viewHistory = function(id) { const d = allDealsCache.find(x => x.id === id); document.getElementById('modal-history-content').innerHTML = (d.commentaireHistory || 'Aucune note').replace(/\n/g, '<br>'); document.getElementById('history-modal').classList.remove('hidden'); };
 
@@ -448,10 +570,14 @@
             if (stored) { 
                 const data = JSON.parse(stored); currentUser = data.user; if(data.config) globalConfig = data.config; 
                 fetchConfig().then(() => { populateFormDropdowns(); }); 
-                if(currentUser.role === 'super_admin') { superAdminData = data.superAdminData || {}; setupSuperAdminSelector(); document.getElementById('nav-settings').classList.remove('hidden'); } 
+                if(currentUser.role === 'super_admin') { 
+                    superAdminData = data.superAdminData || {}; 
+                    setupSuperAdminSelector(); 
+                    document.getElementById('nav-settings').classList.remove('hidden'); 
+                    document.getElementById('settings-admin-section').classList.remove('hidden'); // VISIBLE POUR SUPER ADMIN
+                } 
                 else if(currentUser.role === 'manager' || currentUser.role === 'admin') { availableSheets = data.teamSheets || []; setupManagerSelector(availableSheets); document.getElementById('nav-settings').classList.remove('hidden'); } 
                 else { if (!currentSheetId || currentSheetId === 'null') { 
-                    // FIX: Use .sheetId instead of .personalSheetId based on backend response structure
                     currentSheetId = currentUser.sheetId || currentUser.personalSheetId; 
                     localStorage.setItem('crm_sheetId', currentSheetId); 
                 } } 
@@ -460,24 +586,19 @@
         }
         function showApp() { document.getElementById('login-screen').classList.add('hidden'); document.getElementById('app-content').classList.remove('hidden'); document.getElementById('user-display').textContent = currentUser.name; document.getElementById('role-display').textContent = currentUser.role.toUpperCase(); document.getElementById('org-display').textContent = currentUser.org; updateAddButtonVisibility(); }
         document.getElementById('login-form').addEventListener('submit', async (e) => { e.preventDefault(); const u = document.getElementById('login-user').value.trim(); const p = document.getElementById('login-pass').value.trim(); const btn = document.getElementById('login-btn'); const err = document.getElementById('login-error'); btn.disabled = true; btn.textContent = "Connexion..."; err.classList.add('hidden'); try { const response = await fetch(APPS_SCRIPT_URL, { method: 'POST', mode: 'cors', cache: 'no-cache', headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify({ action: 'LOGIN', username: u, password: p }) }); const result = JSON.parse(await response.text()); if (result.success) { 
-            // FIX: Use .sheetId instead of .personalSheetId based on backend response structure
             let targetSheet = result.user.sheetId || result.user.personalSheetId; 
             if(result.user.role === 'super_admin' || result.user.role === 'manager' || result.user.role === 'admin') targetSheet = 'ALL'; localStorage.setItem('crm_sheetId', targetSheet); localStorage.setItem('crm_user', result.user.name); localStorage.setItem('sellit_auth', JSON.stringify(result)); currentSheetId = targetSheet; currentUser = result.user; initAuth(); } else { err.textContent = result.message || "Identifiants incorrects"; err.classList.remove('hidden'); } } catch (e) { err.textContent = e.message; err.classList.remove('hidden'); } finally { btn.disabled = false; btn.textContent = "Se Connecter"; } });
         
-        async function fetchAppsScript(action, data = {}) { if(action !== 'LOGIN' && action !== 'SAVE_CONFIG' && action !== 'GET_CONFIG') data.targetSheetId = currentSheetId; if (action === 'READ' && currentSheetId === 'ALL' && currentUser) data.org = currentUser.org; try { const response = await fetch(APPS_SCRIPT_URL, { method: 'POST', mode: 'cors', cache: 'no-cache', headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify({ action, ...data }) }); return JSON.parse(await response.text()); } catch (error) { console.error(error); return { success: false, error: error.message }; } }
+        async function fetchAppsScript(action, data = {}) { if(action !== 'LOGIN' && action !== 'SAVE_CONFIG' && action !== 'GET_CONFIG' && action !== 'CREATE_USER' && action !== 'GET_USERS' && action !== 'DELETE_USER') data.targetSheetId = currentSheetId; if (action === 'READ' && currentSheetId === 'ALL' && currentUser) data.org = currentUser.org; try { const response = await fetch(APPS_SCRIPT_URL, { method: 'POST', mode: 'cors', cache: 'no-cache', headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify({ action, ...data }) }); return JSON.parse(await response.text()); } catch (error) { console.error(error); return { success: false, error: error.message }; } }
         async function loadDeals() { 
-            // MODIFICATION ICI : Alerte si pas de Sheet ID
             if(!currentSheetId || currentSheetId === 'null') {
                 alert("⚠️ ATTENTION : Aucun ID de fichier n'est associé à votre compte.\n\nVeuillez contacter l'administrateur pour qu'il ajoute votre Sheet ID dans l'onglet 'Utilisateurs' du fichier Master.");
                 document.getElementById('no-data-message').innerHTML = '<div class="text-center p-4"><i class="fa-solid fa-triangle-exclamation text-4xl text-amber-500 mb-3"></i><p class="font-bold text-lg text-white">Erreur de Configuration</p><p class="text-xs text-slate-400">Votre compte n\'est lié à aucune Google Sheet.</p></div>';
                 document.getElementById('no-data-message').classList.remove('hidden');
                 return;
             }
-            
-            // MODIFICATION ICI : Force le reset des filtres à l'affichage pour éviter les bugs de cache
             document.getElementById('filter-month').value = 'all';
             document.getElementById('filter-status').value = 'all';
-
             document.getElementById('loading-message').classList.remove('hidden'); 
             try { 
                 const res = await fetchAppsScript('READ'); 
@@ -511,29 +632,19 @@
         window.autoFillPrice = function() { 
             const prodVal = document.getElementById('formation').value;
             const payVal = document.getElementById('typePaiement').value;
-            
             if (!prodVal) return;
-
             let foundRule = null;
-            if (payVal && globalConfig.rules) {
-                // Chercher une règle spécifique : Produit X + Paiement Y
-                foundRule = globalConfig.rules.find(r => r.product === prodVal && r.payment === payVal);
-            }
-
+            if (payVal && globalConfig.rules) { foundRule = globalConfig.rules.find(r => r.product === prodVal && r.payment === payVal); }
             if (foundRule) {
-                // Si règle trouvée, on applique Total et Cash
                 document.getElementById('prix').value = foundRule.total;
                 document.getElementById('mensualite').value = foundRule.cash;
                 document.getElementById('nbMens').value = foundRule.nbMens;
-                document.getElementById('jour').value = foundRule.jour || new Date().getDate(); // Default to today
+                document.getElementById('jour').value = foundRule.jour || new Date().getDate(); 
             } else {
-                // Sinon, on remplit juste le prix par défaut du produit
                 const prodSelect = document.getElementById('formation');
                 const opt = prodSelect.options[prodSelect.selectedIndex];
                 if(opt && opt.dataset.price) {
                     const defaultPrice = opt.dataset.price;
-                    // Si le champ est vide ou si on change de produit, on met le défaut. 
-                    // On évite d'écraser si l'utilisateur a déjà saisi un truc manuel.
                     if (!document.getElementById('prix').value || !payVal) {
                         document.getElementById('prix').value = defaultPrice;
                     }
@@ -545,23 +656,9 @@
         function renderSettingsView() { 
             const prodBody = document.getElementById('settings-products-body'); const payBody = document.getElementById('settings-payments-body'); const rulesBody = document.getElementById('settings-rules-body');
             prodBody.innerHTML = ''; payBody.innerHTML = ''; rulesBody.innerHTML = '';
-            
             (globalConfig.products || []).forEach((p, idx) => { prodBody.innerHTML += `<tr><td class="p-2"><input type="text" class="form-input" value="${p.org}" onchange="updateConfigLocal('prod', ${idx}, 'org', this.value)"></td><td class="p-2"><input type="text" class="form-input" value="${p.name}" onchange="updateConfigLocal('prod', ${idx}, 'name', this.value)"></td><td class="p-2"><input type="number" class="form-input" value="${p.price}" onchange="updateConfigLocal('prod', ${idx}, 'price', this.value)"></td><td class="p-2 text-right"><button onclick="removeSettingRow('prod', ${idx})" class="text-red-500 hover:text-red-700"><i class="fa-solid fa-trash"></i></button></td></tr>`; });
             (globalConfig.payments || []).forEach((p, idx) => { payBody.innerHTML += `<tr><td class="p-2"><input type="text" class="form-input" value="${p.org}" onchange="updateConfigLocal('pay', ${idx}, 'org', this.value)"></td><td class="p-2"><input type="text" class="form-input" value="${p.name}" onchange="updateConfigLocal('pay', ${idx}, 'name', this.value)"></td><td class="p-2 text-right"><button onclick="removeSettingRow('pay', ${idx})" class="text-red-500 hover:text-red-700"><i class="fa-solid fa-trash"></i></button></td></tr>`; });
-            
-            // Render Règles
-            (globalConfig.rules || []).forEach((r, idx) => { 
-                rulesBody.innerHTML += `<tr>
-                    <td class="p-2"><input type="text" class="form-input" value="${r.org}" onchange="updateConfigLocal('rules', ${idx}, 'org', this.value)"></td>
-                    <td class="p-2"><input type="text" class="form-input font-bold text-emerald-400" value="${r.product}" placeholder="Nom Produit Exact..." onchange="updateConfigLocal('rules', ${idx}, 'product', this.value)"></td>
-                    <td class="p-2"><input type="text" class="form-input text-indigo-400" value="${r.payment}" placeholder="Nom Paiement Exact..." onchange="updateConfigLocal('rules', ${idx}, 'payment', this.value)"></td>
-                    <td class="p-2"><input type="number" class="form-input" value="${r.total}" onchange="updateConfigLocal('rules', ${idx}, 'total', this.value)"></td>
-                    <td class="p-2"><input type="number" class="form-input" value="${r.cash}" onchange="updateConfigLocal('rules', ${idx}, 'cash', this.value)"></td>
-                    <td class="p-2"><input type="number" class="form-input" value="${r.nbMens}" placeholder="#" onchange="updateConfigLocal('rules', ${idx}, 'nbMens', this.value)"></td>
-                    <td class="p-2"><input type="text" class="form-input" value="${r.jour}" placeholder="J" onchange="updateConfigLocal('rules', ${idx}, 'jour', this.value)"></td>
-                    <td class="p-2 text-right"><button onclick="removeSettingRow('rules', ${idx})" class="text-red-500 hover:text-red-700"><i class="fa-solid fa-trash"></i></button></td>
-                </tr>`; 
-            });
+            (globalConfig.rules || []).forEach((r, idx) => { rulesBody.innerHTML += `<tr><td class="p-2"><input type="text" class="form-input" value="${r.org}" onchange="updateConfigLocal('rules', ${idx}, 'org', this.value)"></td><td class="p-2"><input type="text" class="form-input font-bold text-emerald-400" value="${r.product}" placeholder="Nom Produit Exact..." onchange="updateConfigLocal('rules', ${idx}, 'product', this.value)"></td><td class="p-2"><input type="text" class="form-input text-indigo-400" value="${r.payment}" placeholder="Nom Paiement Exact..." onchange="updateConfigLocal('rules', ${idx}, 'payment', this.value)"></td><td class="p-2"><input type="number" class="form-input" value="${r.total}" onchange="updateConfigLocal('rules', ${idx}, 'total', this.value)"></td><td class="p-2"><input type="number" class="form-input" value="${r.cash}" onchange="updateConfigLocal('rules', ${idx}, 'cash', this.value)"></td><td class="p-2"><input type="number" class="form-input" value="${r.nbMens}" placeholder="#" onchange="updateConfigLocal('rules', ${idx}, 'nbMens', this.value)"></td><td class="p-2"><input type="text" class="form-input" value="${r.jour}" placeholder="J" onchange="updateConfigLocal('rules', ${idx}, 'jour', this.value)"></td><td class="p-2 text-right"><button onclick="removeSettingRow('rules', ${idx})" class="text-red-500 hover:text-red-700"><i class="fa-solid fa-trash"></i></button></td></tr>`; });
         }
         
         function setupSuperAdminSelector() { const orgContainer = document.getElementById('superadmin-selector-container'); const orgSel = document.getElementById('superadmin-org-selector'); const managerContainer = document.getElementById('manager-selector-container'); orgContainer.classList.remove('hidden'); managerContainer.classList.add('hidden'); orgSel.innerHTML = '<option value="">Choisir Client...</option>'; Object.keys(superAdminData).forEach(orgName => { const opt = document.createElement('option'); opt.value = orgName; opt.textContent = orgName; orgSel.appendChild(opt); }); orgSel.addEventListener('change', (e) => { const selectedOrg = e.target.value; if(selectedOrg && superAdminData[selectedOrg]) { currentUser.org = selectedOrg; document.getElementById('org-display').textContent = selectedOrg; availableSheets = superAdminData[selectedOrg]; setupManagerSelector(availableSheets); currentSheetId = 'ALL'; document.getElementById('manager-view-selector').value = 'ALL'; loadDeals(); } else { managerContainer.classList.add('hidden'); } }); }
@@ -598,7 +695,7 @@
         function renderTable(list) { const tbody = document.getElementById('deals-table-body'); tbody.innerHTML = ''; document.getElementById('no-data-message').classList.toggle('hidden', list.length > 0); list.forEach(d => { const isPast = d.dateRDV && new Date(d.dateRDV) < new Date().setHours(0,0,0,0); const isLate = isPast && !d.close && !d.nonClose && !d.ghost && !d.cancelled && !d.unqualified && !d.rescheduled; let badgeClass = "bg-slate-100 text-slate-500 dark:bg-slate-700 dark:text-slate-300"; let badgeText = "NOUVEAU"; if(d.close) { badgeClass = "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400"; badgeText = "GAGNÉ"; } else if(d.aFollowUp) { badgeClass = "bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400"; badgeText = "RELANCE"; } else if(d.ghost) { badgeClass = "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400"; badgeText = "GHOST"; } else if(d.nonClose) { badgeClass = "bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400"; badgeText = "PERDU"; } else if(d.cancelled) { badgeClass = "bg-slate-200 text-slate-600 dark:bg-slate-700 dark:text-slate-400"; badgeText = "ANNULÉ"; } else if(d.unqualified) { badgeClass = "bg-orange-100 text-orange-600 dark:bg-orange-900/30 dark:text-orange-400"; badgeText = "NON QUALIF"; } else if(d.rescheduled) { badgeClass = "bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400"; badgeText = "REPORTÉ"; } const ownerTag = d.ownerName ? `<div class="text-[10px] text-slate-400 dark:text-slate-500 bg-slate-100 dark:bg-slate-800 px-1 rounded ml-2 border border-slate-200 dark:border-slate-700">${d.ownerName}</div>` : ''; 
         // ROLE CHECK NORMALIZED
         const roleNettoye = (currentUser.role || "").trim().toLowerCase();
-        const row = `<tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors border-b border-slate-100 dark:border-slate-800 last:border-none group"><td class="px-6 py-4"><div class="flex items-center"><div><div class="text-sm font-bold text-slate-700 dark:text-slate-200 group-hover:text-accent transition-colors">${d.nomPrenom}</div><div class="flex items-center mt-0.5"><span class="text-[10px] uppercase font-bold text-slate-400 dark:text-slate-500">${d.source || '-'}</span>${d.entrepreneur ? `<span class="ml-2 text-[10px] bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 px-1.5 rounded font-bold border border-indigo-100 dark:border-indigo-500/20">${d.entrepreneur}</span>` : ''}${ownerTag}</div></div></div></td><td class="px-6 py-4"><div class="text-sm font-medium text-slate-600 dark:text-slate-300">${formatDateFR(d.dateRDV)}</div>${isLate ? '<div class="text-[10px] text-red-500 font-bold uppercase mt-0.5">Retard</div>' : ''}</td><td class="px-6 py-4"><div class="text-xs font-bold text-slate-700 dark:text-slate-300">${d.formation || '-'}</div>${d.prix ? `<div class="text-[10px] text-slate-400 font-mono">${d.prix} €</div>` : ''}</td><td class="px-6 py-4"><span class="px-2 py-1 rounded text-[10px] font-bold ${badgeClass}">${badgeText}</span></td><td class="px-6 py-4 text-right"><div class="opacity-0 group-hover:opacity-100 transition-opacity flex justify-end gap-2"><button onclick="viewHistory('${d.id}')" class="p-1.5 text-slate-400 hover:text-slate-800 dark:hover:text-white transition-colors"><i class="fa-regular fa-comments"></i></button>${currentSheetId !== 'ALL' ? `<button onclick="editDeal('${d.id}')" class="p-1.5 text-indigo-500 hover:text-indigo-700 dark:hover:text-indigo-400"><i class="fa-solid fa-pen"></i></button>${roleNettoye !== 'closer' ? `<button onclick="deleteDeal('${d.id}')" class="p-1.5 text-red-400 hover:text-red-600"><i class="fa-solid fa-trash"></i></button>` : ''}` : ''}</div></td></tr>`; tbody.innerHTML += row; }); }
+        const row = `<tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors border-b border-slate-100 dark:border-slate-800 last:border-none group"><td class="px-6 py-4"><div class="flex items-center"><div><div class="text-sm font-bold text-slate-700 dark:text-slate-200 group-hover:text-accent transition-colors">${d.nomPrenom}</div><div class="flex items-center mt-0.5"><span class="text-[10px] uppercase font-bold text-slate-400 dark:text-slate-500">${d.source || '-'}</span>${d.entrepreneur ? `<span class="ml-2 text-[10px] bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 px-1.5 rounded font-bold border border-indigo-100 dark:border-indigo-500/20">${d.entrepreneur}</span>` : ''}${ownerTag}</div></div></div></td><td class="px-6 py-4"><div class="text-sm font-medium text-slate-600 dark:text-slate-300">${formatDateFR(d.dateRDV)}</div>${isLate ? '<div class="text-[10px] text-red-500 font-bold uppercase mt-0.5">Retard</div>' : ''}${relanceTag}</td><td class="px-6 py-4"><div class="text-xs font-bold text-slate-700 dark:text-slate-300">${d.formation || '-'}</div>${d.prix ? `<div class="text-[10px] text-slate-400 font-mono">${d.prix} €</div>` : ''}</td><td class="px-6 py-4"><span class="px-2 py-1 rounded text-[10px] font-bold ${badgeClass}">${badgeText}</span></td><td class="px-6 py-4 text-right"><div class="opacity-0 group-hover:opacity-100 transition-opacity flex justify-end gap-2"><button onclick="viewHistory('${d.id}')" class="p-1.5 text-slate-400 hover:text-slate-800 dark:hover:text-white transition-colors"><i class="fa-regular fa-comments"></i></button>${currentSheetId !== 'ALL' ? `<button onclick="editDeal('${d.id}')" class="p-1.5 text-indigo-500 hover:text-indigo-700 dark:hover:text-indigo-400"><i class="fa-solid fa-pen"></i></button>${roleNettoye !== 'closer' ? `<button onclick="deleteDeal('${d.id}')" class="p-1.5 text-red-400 hover:text-red-600"><i class="fa-solid fa-trash"></i></button>` : ''}` : ''}</div></td></tr>`; tbody.innerHTML += row; }); }
         function updateKPIs(list) { document.getElementById('metric-total').textContent = list.length; document.getElementById('metric-followup').textContent = list.filter(d => d.aFollowUp).length; document.getElementById('metric-closed').textContent = list.filter(d => d.close).length; }
         
         // --- REPORTING (NOUVELLE VERSION INTELLIGENTE) ---
