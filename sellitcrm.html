@@ -253,6 +253,7 @@
     <div id="history-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4"><div class="absolute inset-0 dark:bg-black/80 bg-slate-900/40 backdrop-blur-sm" onclick="document.getElementById('history-modal').classList.add('hidden')"></div><div class="relative dark:bg-slate-900 bg-white border dark:border-white/10 border-slate-200 rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden"><div class="p-4 border-b dark:border-white/10 border-slate-100 font-bold dark:text-white text-slate-800">Historique Complet</div><div id="modal-history-content" class="p-6 text-sm dark:text-slate-300 text-slate-600 max-h-96 overflow-y-auto dark:bg-slate-800/50 bg-slate-50"></div><div class="p-4 border-t dark:border-white/10 border-slate-100 flex justify-end"><button onclick="document.getElementById('history-modal').classList.add('hidden')" class="text-sm font-bold dark:text-slate-400 text-slate-500 hover:text-slate-800 dark:hover:text-white">Fermer</button></div></div></div>
     
     <script>
+        // URL du script Google Apps (API Backend)
         const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzZzTCbYR2H4jsGfrZt60oxhmwgf8D_wS8QSgO4GggLoECqsPP9LctDITbWgb6oBZQh/exec'; 
         
         window.switchView = function(viewId) { 
@@ -364,15 +365,46 @@
                 fetchConfig().then(() => { populateFormDropdowns(); }); 
                 if(currentUser.role === 'super_admin') { superAdminData = data.superAdminData || {}; setupSuperAdminSelector(); document.getElementById('nav-settings').classList.remove('hidden'); } 
                 else if(currentUser.role === 'manager' || currentUser.role === 'admin') { availableSheets = data.teamSheets || []; setupManagerSelector(availableSheets); document.getElementById('nav-settings').classList.remove('hidden'); } 
-                else { if (!currentSheetId || currentSheetId === 'null') { currentSheetId = currentUser.personalSheetId; localStorage.setItem('crm_sheetId', currentSheetId); } } 
+                else { if (!currentSheetId || currentSheetId === 'null') { 
+                    // FIX: Use .sheetId instead of .personalSheetId based on backend response structure
+                    currentSheetId = currentUser.sheetId || currentUser.personalSheetId; 
+                    localStorage.setItem('crm_sheetId', currentSheetId); 
+                } } 
                 showApp(); loadDeals(); 
             } else { document.getElementById('login-screen').classList.remove('hidden'); document.getElementById('app-content').classList.add('hidden'); } 
         }
         function showApp() { document.getElementById('login-screen').classList.add('hidden'); document.getElementById('app-content').classList.remove('hidden'); document.getElementById('user-display').textContent = currentUser.name; document.getElementById('role-display').textContent = currentUser.role.toUpperCase(); document.getElementById('org-display').textContent = currentUser.org; updateAddButtonVisibility(); }
-        document.getElementById('login-form').addEventListener('submit', async (e) => { e.preventDefault(); const u = document.getElementById('login-user').value.trim(); const p = document.getElementById('login-pass').value.trim(); const btn = document.getElementById('login-btn'); const err = document.getElementById('login-error'); btn.disabled = true; btn.textContent = "Connexion..."; err.classList.add('hidden'); try { const response = await fetch(APPS_SCRIPT_URL, { method: 'POST', mode: 'cors', cache: 'no-cache', headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify({ action: 'LOGIN', username: u, password: p }) }); const result = JSON.parse(await response.text()); if (result.success) { let targetSheet = result.user.personalSheetId; if(result.user.role === 'super_admin' || result.user.role === 'manager' || result.user.role === 'admin') targetSheet = 'ALL'; localStorage.setItem('crm_sheetId', targetSheet); localStorage.setItem('crm_user', result.user.name); localStorage.setItem('sellit_auth', JSON.stringify(result)); currentSheetId = targetSheet; currentUser = result.user; initAuth(); } else { err.textContent = result.message || "Identifiants incorrects"; err.classList.remove('hidden'); } } catch (e) { err.textContent = e.message; err.classList.remove('hidden'); } finally { btn.disabled = false; btn.textContent = "Se Connecter"; } });
+        document.getElementById('login-form').addEventListener('submit', async (e) => { e.preventDefault(); const u = document.getElementById('login-user').value.trim(); const p = document.getElementById('login-pass').value.trim(); const btn = document.getElementById('login-btn'); const err = document.getElementById('login-error'); btn.disabled = true; btn.textContent = "Connexion..."; err.classList.add('hidden'); try { const response = await fetch(APPS_SCRIPT_URL, { method: 'POST', mode: 'cors', cache: 'no-cache', headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify({ action: 'LOGIN', username: u, password: p }) }); const result = JSON.parse(await response.text()); if (result.success) { 
+            // FIX: Use .sheetId instead of .personalSheetId based on backend response structure
+            let targetSheet = result.user.sheetId || result.user.personalSheetId; 
+            if(result.user.role === 'super_admin' || result.user.role === 'manager' || result.user.role === 'admin') targetSheet = 'ALL'; localStorage.setItem('crm_sheetId', targetSheet); localStorage.setItem('crm_user', result.user.name); localStorage.setItem('sellit_auth', JSON.stringify(result)); currentSheetId = targetSheet; currentUser = result.user; initAuth(); } else { err.textContent = result.message || "Identifiants incorrects"; err.classList.remove('hidden'); } } catch (e) { err.textContent = e.message; err.classList.remove('hidden'); } finally { btn.disabled = false; btn.textContent = "Se Connecter"; } });
         
         async function fetchAppsScript(action, data = {}) { if(action !== 'LOGIN' && action !== 'SAVE_CONFIG' && action !== 'GET_CONFIG') data.targetSheetId = currentSheetId; if (action === 'READ' && currentSheetId === 'ALL' && currentUser) data.org = currentUser.org; try { const response = await fetch(APPS_SCRIPT_URL, { method: 'POST', mode: 'cors', cache: 'no-cache', headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify({ action, ...data }) }); return JSON.parse(await response.text()); } catch (error) { console.error(error); return { success: false, error: error.message }; } }
-        async function loadDeals() { if(!currentSheetId || currentSheetId === 'null') return; document.getElementById('loading-message').classList.remove('hidden'); try { const res = await fetchAppsScript('READ'); if (res.success) { allDealsCache = (res.deals || []).filter(d => d.nomPrenom && String(d.nomPrenom).trim() !== ""); renderAll(); } else { alert('Erreur chargement: ' + res.message); } } catch(e) {} document.getElementById('loading-message').classList.add('hidden'); }
+        async function loadDeals() { 
+            // MODIFICATION ICI : Alerte si pas de Sheet ID
+            if(!currentSheetId || currentSheetId === 'null') {
+                alert("⚠️ ATTENTION : Aucun ID de fichier n'est associé à votre compte.\n\nVeuillez contacter l'administrateur pour qu'il ajoute votre Sheet ID dans l'onglet 'Utilisateurs' du fichier Master.");
+                document.getElementById('no-data-message').innerHTML = '<div class="text-center p-4"><i class="fa-solid fa-triangle-exclamation text-4xl text-amber-500 mb-3"></i><p class="font-bold text-lg">Erreur de Configuration</p><p class="text-xs opacity-70">Votre compte n\'est lié à aucune Google Sheet.</p></div>';
+                document.getElementById('no-data-message').classList.remove('hidden');
+                return;
+            }
+            
+            // MODIFICATION ICI : Force le reset des filtres à l'affichage pour éviter les bugs de cache
+            document.getElementById('filter-month').value = 'all';
+            document.getElementById('filter-status').value = 'all';
+
+            document.getElementById('loading-message').classList.remove('hidden'); 
+            try { 
+                const res = await fetchAppsScript('READ'); 
+                if (res.success) { 
+                    allDealsCache = (res.deals || []).filter(d => d.nomPrenom && String(d.nomPrenom).trim() !== ""); 
+                    renderAll(); 
+                } else { 
+                    alert('Erreur chargement: ' + res.message); 
+                } 
+            } catch(e) {} 
+            document.getElementById('loading-message').classList.add('hidden'); 
+        }
         
         function populateFormDropdowns() {
             const prodSelect = document.getElementById('formation'); const paySelect = document.getElementById('typePaiement'); const prodVal = prodSelect.value; const payVal = paySelect.value;
