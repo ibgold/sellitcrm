@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Thoth CRM</title>
+    <title>Sell It CRM</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -32,8 +32,8 @@
     <div id="login-screen" class="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900">
         <div class="bg-slate-800 border border-slate-700 rounded-2xl shadow-2xl p-8 w-full max-w-sm mx-4 text-center fade-in">
             <div class="mb-8 flex flex-col justify-center items-center gap-3">
-                <div class="h-14 w-14 bg-gradient-to-br from-amber-500 to-yellow-700 rounded-2xl flex items-center justify-center text-white font-bold text-2xl shadow-lg shadow-amber-500/20"><i class="fa-solid fa-feather-pointed"></i></div>
-                <h1 class="text-3xl font-bold text-white tracking-tight">THOTH <span class="text-amber-500">CRM</span></h1>
+                <div class="h-14 w-14 bg-gradient-to-br from-amber-500 to-yellow-700 rounded-2xl flex items-center justify-center text-white font-bold text-2xl shadow-lg shadow-amber-500/20"><i class="fa-solid fa-rocket"></i></div>
+                <h1 class="text-3xl font-bold text-white tracking-tight">SELL IT <span class="text-amber-500">CRM</span></h1>
             </div>
             <form id="login-form" class="space-y-5 text-left">
                 <div class="form-group"><label>Identifiant</label><input type="text" id="login-user" class="form-input" placeholder="Votre pseudo"></div>
@@ -50,8 +50,8 @@
         <div class="hidden md:flex md:w-72 md:flex-col md:fixed md:inset-y-0 z-50 border-r transition-colors duration-300 dark:bg-slate-900 dark:border-slate-800 dark:shadow-xl bg-white border-slate-200 shadow-sm">
             <div class="flex flex-col flex-1 min-h-0">
                 <div class="flex items-center h-20 px-6 border-b dark:border-slate-800 border-slate-100 gap-3">
-                    <div class="h-8 w-8 bg-gradient-to-br from-amber-500 to-yellow-600 rounded-lg flex items-center justify-center text-white font-bold shadow-md"><i class="fa-solid fa-feather text-xs"></i></div>
-                    <span class="text-xl font-bold dark:text-white text-slate-900 tracking-wide">THOTH <span class="text-amber-500">CRM</span></span>
+                    <div class="h-8 w-8 bg-gradient-to-br from-amber-500 to-yellow-600 rounded-lg flex items-center justify-center text-white font-bold shadow-md"><i class="fa-solid fa-rocket text-xs"></i></div>
+                    <span class="text-xl font-bold dark:text-white text-slate-900 tracking-wide">SELL IT <span class="text-amber-500">CRM</span></span>
                 </div>
                 <div class="flex-1 py-6 px-4 space-y-2 overflow-y-auto">
                     <button onclick="switchView('dashboard')" id="nav-dashboard" class="w-full group flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200 dark:bg-white/5 dark:text-amber-400 dark:border-white/10 dark:shadow-inner bg-indigo-50 text-indigo-700 border-indigo-100 shadow-sm"><i class="fa-solid fa-chart-line mr-3 w-5 text-center"></i> Pipeline</button>
@@ -354,7 +354,7 @@
                 <div class="form-group"><label>Sheet ID (Fichier)</label><input type="text" id="new-user-sheet" class="form-input" required placeholder="ID Google Sheet..."></div>
                 <div class="flex justify-end gap-2 mt-6">
                     <button type="button" onclick="closeUserModal()" class="px-4 py-2 text-slate-400 hover:text-white text-sm font-bold">Annuler</button>
-                    <button type="submit" class="px-6 py-2 bg-purple-600 hover:bg-purple-500 text-white rounded-lg font-bold text-sm transition-colors">Créer</button>
+                    <button type="submit" id="btn-create-user" class="px-6 py-2 bg-purple-600 hover:bg-purple-500 text-white rounded-lg font-bold text-sm transition-colors">Créer</button>
                 </div>
             </form>
         </div>
@@ -466,10 +466,16 @@
 
             if(!confirm(`Créer l'utilisateur ${userData.username} ?`)) return;
 
+            // AJOUT LOADING STATE
+            const btn = document.getElementById('btn-create-user');
+            const originalText = btn.textContent;
+            btn.disabled = true;
+            btn.textContent = "Création en cours...";
+
             try {
                 const res = await fetchAppsScript('CREATE_USER', { userData: userData });
                 if(res.success) {
-                    alert('Utilisateur créé !');
+                    alert('Utilisateur créé avec succès !');
                     closeUserModal(); // FERME LA MODALE
                     loadUsers(); // RECHARGE LA LISTE
                 } else {
@@ -477,6 +483,9 @@
                 }
             } catch(err) {
                 alert('Erreur réseau');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = originalText;
             }
         });
 
