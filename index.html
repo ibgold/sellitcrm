@@ -21,6 +21,10 @@
         .slide-over { transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
         .fade-in { animation: fadeIn 0.4s ease-out forwards; } @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
         #slide-over-panel { transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
+        
+        /* Navigation Active State */
+        .nav-btn.active { @apply bg-indigo-50 text-indigo-700 border-indigo-100 shadow-sm dark:bg-white/5 dark:text-amber-400 dark:border-white/10 dark:shadow-inner; }
+        .nav-btn.inactive { @apply text-slate-500 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-white/5 dark:hover:text-white; }
     </style>
     <script>
         tailwind.config = { darkMode: 'class', theme: { extend: { colors: { primary: '#0f172a', secondary: '#1e293b', accent: '#f59e0b' } } } }
@@ -54,9 +58,9 @@
                     <span class="text-xl font-bold dark:text-white text-slate-900 tracking-wide">SELL IT <span class="text-amber-500">CRM</span></span>
                 </div>
                 <div class="flex-1 py-6 px-4 space-y-2 overflow-y-auto">
-                    <button onclick="switchView('dashboard')" id="nav-dashboard" class="w-full group flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200 dark:bg-white/5 dark:text-amber-400 dark:border-white/10 dark:shadow-inner bg-indigo-50 text-indigo-700 border-indigo-100 shadow-sm"><i class="fa-solid fa-chart-line mr-3 w-5 text-center"></i> Pipeline</button>
-                    <button onclick="switchView('stats')" id="nav-stats" class="w-full group flex items-center px-4 py-3 text-sm font-medium rounded-xl dark:text-slate-400 dark:hover:bg-white/5 dark:hover:text-white text-slate-500 hover:bg-slate-100 hover:text-slate-900 transition-all duration-200"><i class="fa-solid fa-chart-pie mr-3 w-5 text-center"></i> Statistiques</button>
-                    <button onclick="switchView('settings')" id="nav-settings" class="hidden w-full group flex items-center px-4 py-3 text-sm font-medium rounded-xl dark:text-slate-400 dark:hover:bg-white/5 dark:hover:text-white text-slate-500 hover:bg-slate-100 hover:text-slate-900 transition-all duration-200"><i class="fa-solid fa-cog mr-3 w-5 text-center"></i> Paramètres</button>
+                    <button onclick="switchView('dashboard')" id="nav-dashboard" class="nav-btn w-full group flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200"><i class="fa-solid fa-chart-line mr-3 w-5 text-center"></i> Pipeline</button>
+                    <button onclick="switchView('stats')" id="nav-stats" class="nav-btn w-full group flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200"><i class="fa-solid fa-chart-pie mr-3 w-5 text-center"></i> Statistiques</button>
+                    <button onclick="switchView('settings')" id="nav-settings" class="nav-btn hidden w-full group flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200"><i class="fa-solid fa-cog mr-3 w-5 text-center"></i> Paramètres</button>
                 </div>
                 <div class="p-4 border-t dark:border-slate-800 dark:bg-slate-950/30 border-slate-100 bg-slate-50/50">
                     <div class="flex items-center justify-between mb-3">
@@ -132,73 +136,104 @@
                     </div>
                 </div>
 
-                <!-- VIEW: STATS -->
-                <div id="view-stats" class="hidden space-y-6 fade-in">
-                    <!-- LIGNE 1 : KPIS INTELLIGENTS & LISIBLES -->
-                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                        <div class="dark:bg-slate-800 bg-white p-5 rounded-2xl border dark:border-amber-500/50 border-slate-200 border-l-4 shadow-lg relative overflow-hidden">
-                            <div class="absolute top-0 right-0 p-3 opacity-10"><i class="fa-solid fa-file-contract text-6xl text-amber-500"></i></div>
-                            <p class="text-xs font-bold uppercase text-amber-500 mb-1">CA Signé Total</p>
-                            <p class="text-3xl font-extrabold dark:text-white text-slate-800" id="report-ca-sign">0 €</p>
-                            <p class="text-[10px] text-slate-400 mt-2 font-medium">Montant total des contrats</p>
-                        </div>
-                        <div class="dark:bg-slate-800 bg-white p-5 rounded-2xl border dark:border-emerald-500/50 border-slate-200 border-l-4 shadow-lg relative overflow-hidden">
-                            <div class="absolute top-0 right-0 p-3 opacity-10"><i class="fa-solid fa-sack-dollar text-6xl text-emerald-500"></i></div>
-                            <p class="text-xs font-bold uppercase text-emerald-500 mb-1">Cash In (Réel)</p>
-                            <p class="text-3xl font-extrabold dark:text-white text-slate-800" id="report-ca-cash">0 €</p>
-                            <p class="text-[10px] text-slate-400 mt-2 font-medium" id="report-collection-rate">Taux d'encaissement: 0%</p>
-                        </div>
-                        <div class="dark:bg-slate-800 bg-white p-5 rounded-2xl border dark:border-slate-700 border-slate-200">
-                            <p class="text-xs font-bold uppercase text-indigo-400 flex items-center gap-2"><i class="fa-solid fa-bullseye"></i> Taux de Closing</p>
-                            <div class="flex items-end gap-2 mt-2">
-                                <p class="text-2xl font-extrabold dark:text-white text-slate-800" id="report-tx-close">0%</p>
-                                <span class="text-xs text-slate-400 mb-1 font-mono" id="report-wins-total">0/0</span>
+                <!-- VIEW: STATS (REFONTE TOTALE) -->
+                <div id="view-stats" class="hidden space-y-8 fade-in">
+                    <!-- 1. LE CARBURANT (VOLUME) -->
+                    <div>
+                        <h3 class="text-sm font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400 mb-4 flex items-center gap-2"><i class="fa-solid fa-gas-pump"></i> Volume (Carburant)</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                            <div class="stat-card p-5 rounded-xl border dark:bg-slate-800 bg-white border-slate-200 dark:border-slate-700">
+                                <p class="text-xs text-slate-500 dark:text-slate-400 font-bold uppercase">RDV Bookés</p>
+                                <p class="text-2xl font-extrabold dark:text-white text-slate-800 mt-1" id="stat-booked">0</p>
                             </div>
-                            <div class="w-full bg-slate-700 h-1.5 rounded-full mt-2 overflow-hidden"><div id="bar-tx-close" class="bg-indigo-500 h-full rounded-full" style="width: 0%"></div></div>
-                        </div>
-                        <div class="dark:bg-slate-800 bg-white p-5 rounded-2xl border dark:border-slate-700 border-slate-200">
-                            <p class="text-xs font-bold uppercase text-blue-400 flex items-center gap-2"><i class="fa-solid fa-basket-shopping"></i> Panier Moyen</p>
-                            <p class="text-2xl font-extrabold dark:text-white text-slate-800 mt-2" id="report-avg-cart">0 €</p>
-                            <p class="text-[10px] text-slate-400 mt-1">Par vente clôturée</p>
+                            <div class="stat-card p-5 rounded-xl border bg-indigo-50 dark:bg-indigo-900/10 border-indigo-100 dark:border-indigo-500/20">
+                                <p class="text-xs text-indigo-600 dark:text-indigo-400 font-bold uppercase">✅ RDV Tenus (Shows)</p>
+                                <p class="text-2xl font-extrabold text-indigo-700 dark:text-indigo-300 mt-1" id="stat-shows">0</p>
+                                <p class="text-[10px] text-indigo-400 mt-1 font-mono" id="stat-show-rate">Show Rate: 0%</p>
+                            </div>
+                            <div class="stat-card p-5 rounded-xl border dark:bg-slate-800 bg-white border-slate-200 dark:border-slate-700">
+                                <p class="text-xs text-amber-500 font-bold uppercase">👻 Ghost / No-Show</p>
+                                <p class="text-2xl font-extrabold dark:text-white text-slate-800 mt-1" id="stat-ghost">0</p>
+                                <p class="text-[10px] text-slate-400 mt-1 font-mono" id="stat-ghost-rate">0%</p>
+                            </div>
+                            <div class="stat-card p-5 rounded-xl border dark:bg-slate-800 bg-white border-slate-200 dark:border-slate-700">
+                                <p class="text-xs text-blue-500 font-bold uppercase">📅 Reportés</p>
+                                <p class="text-2xl font-extrabold dark:text-white text-slate-800 mt-1" id="stat-rescheduled">0</p>
+                                <p class="text-[10px] text-slate-400 mt-1 font-mono" id="stat-rescheduled-rate">0%</p>
+                            </div>
                         </div>
                     </div>
 
-                    <!-- LIGNE 2 : CHARTS ANALYTIQUES -->
-                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                        <div class="lg:col-span-2 dark:bg-slate-800 bg-white p-6 rounded-2xl border dark:border-slate-700 border-slate-200 flex flex-col">
-                            <div class="flex justify-between items-center mb-4">
-                                <h3 class="font-bold dark:text-white text-slate-800 text-sm uppercase tracking-wide flex items-center gap-2"><i class="fa-solid fa-chart-area text-slate-500"></i> Performance Financière</h3>
-                                <div class="flex gap-2 text-[10px] font-bold">
-                                    <span class="flex items-center gap-1 text-amber-500"><span class="w-2 h-2 rounded-full bg-amber-500"></span> Signé</span>
-                                    <span class="flex items-center gap-1 text-emerald-500"><span class="w-2 h-2 rounded-full bg-emerald-500"></span> Cash</span>
-                                </div>
+                    <!-- 2. LA COMPETENCE (CONVERSION) -->
+                    <div>
+                        <h3 class="text-sm font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400 mb-4 flex items-center gap-2"><i class="fa-solid fa-filter"></i> Conversion (Skill)</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                            <div class="stat-card p-5 rounded-xl border bg-emerald-50 dark:bg-emerald-900/10 border-emerald-100 dark:border-emerald-500/20">
+                                <p class="text-xs text-emerald-600 dark:text-emerald-400 font-bold uppercase">🏆 Ventes (Wins)</p>
+                                <p class="text-2xl font-extrabold text-emerald-700 dark:text-emerald-300 mt-1" id="stat-wins">0</p>
                             </div>
-                            <div class="flex-1 min-h-[250px]"><canvas id="chart-finance"></canvas></div>
-                        </div>
-                        <div class="dark:bg-slate-800 bg-white p-6 rounded-2xl border dark:border-slate-700 border-slate-200 flex flex-col">
-                            <h3 class="font-bold dark:text-white text-slate-800 text-sm uppercase tracking-wide mb-4 flex items-center gap-2"><i class="fa-solid fa-chart-pie text-slate-500"></i> Analyse des Échecs</h3>
-                            <div class="flex-1 min-h-[200px] relative"><canvas id="chart-reasons"></canvas></div>
-                            <div id="reasons-legend" class="mt-4 space-y-2"></div>
+                            <div class="stat-card p-5 rounded-xl border dark:bg-slate-800 bg-white border-slate-200 dark:border-slate-700 relative overflow-hidden">
+                                <div class="absolute right-0 top-0 p-4 opacity-5"><i class="fa-solid fa-bullseye text-5xl"></i></div>
+                                <p class="text-xs text-purple-500 font-bold uppercase">🎯 Close Rate (sur Shows)</p>
+                                <p class="text-3xl font-extrabold dark:text-white text-slate-800 mt-1" id="stat-close-rate">0%</p>
+                                <div class="w-full bg-slate-700 h-1 mt-2 rounded-full overflow-hidden"><div id="bar-close-rate" class="bg-purple-500 h-full" style="width: 0%"></div></div>
+                            </div>
+                            <div class="stat-card p-5 rounded-xl border dark:bg-slate-800 bg-white border-slate-200 dark:border-slate-700">
+                                <p class="text-xs text-red-400 font-bold uppercase">❌ Perdus (sur Shows)</p>
+                                <p class="text-2xl font-extrabold dark:text-white text-slate-800 mt-1" id="stat-loss-rate">0%</p>
+                                <p class="text-[10px] text-slate-400 mt-1 font-mono" id="stat-loss-nb">0 Deals</p>
+                            </div>
+                            <div class="stat-card p-5 rounded-xl border dark:bg-slate-800 bg-white border-slate-200 dark:border-slate-700">
+                                <p class="text-xs text-orange-400 font-bold uppercase">💩 Non Qualifié</p>
+                                <p class="text-2xl font-extrabold dark:text-white text-slate-800 mt-1" id="stat-nq-rate">0%</p>
+                                <p class="text-[10px] text-slate-400 mt-1 font-mono" id="stat-nq-nb">0 Deals</p>
+                            </div>
                         </div>
                     </div>
 
-                    <!-- LIGNE 3 : TABLEAUX DETAILS -->
-                    <div class="dark:bg-slate-800 bg-white rounded-2xl shadow-sm border dark:border-slate-700 border-slate-200 overflow-hidden">
-                        <div class="px-6 py-4 border-b dark:border-slate-700 border-slate-100 dark:bg-slate-900/50 bg-slate-50 flex justify-between items-center">
-                            <h3 class="font-bold dark:text-white text-slate-800 flex items-center gap-2"><span class="w-1 h-4 bg-indigo-500 rounded-full"></span> Top Sources</h3>
+                    <!-- 3. BUSINESS (FINANCE) -->
+                    <div>
+                        <h3 class="text-sm font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400 mb-4 flex items-center gap-2"><i class="fa-solid fa-sack-dollar"></i> Business (Finance)</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                            <div class="stat-card p-5 rounded-xl border dark:border-amber-500/30 border-amber-200 bg-amber-50 dark:bg-amber-900/10">
+                                <p class="text-xs text-amber-600 dark:text-amber-400 font-bold uppercase">CA Signé Total</p>
+                                <p class="text-2xl font-extrabold text-amber-700 dark:text-amber-300 mt-1" id="stat-ca">0 €</p>
+                            </div>
+                            <div class="stat-card p-5 rounded-xl border dark:border-emerald-500/30 border-emerald-200 bg-emerald-50 dark:bg-emerald-900/10">
+                                <p class="text-xs text-emerald-600 dark:text-emerald-400 font-bold uppercase">Cash Encaissé</p>
+                                <p class="text-2xl font-extrabold text-emerald-700 dark:text-emerald-300 mt-1" id="stat-cash">0 €</p>
+                                <p class="text-[10px] text-emerald-600/70 dark:text-emerald-400/70 mt-1 font-bold" id="stat-collection">Encaissement: 0%</p>
+                            </div>
+                            <div class="stat-card p-5 rounded-xl border dark:bg-slate-800 bg-white border-slate-200 dark:border-slate-700">
+                                <p class="text-xs text-blue-400 font-bold uppercase">🛒 Panier Moyen (AOV)</p>
+                                <p class="text-2xl font-extrabold dark:text-white text-slate-800 mt-1" id="stat-aov">0 €</p>
+                            </div>
+                            <div class="stat-card p-5 rounded-xl border dark:bg-slate-800 bg-white border-slate-200 dark:border-slate-700 relative overflow-hidden">
+                                <div class="absolute right-0 bottom-0 p-4 opacity-5"><i class="fa-solid fa-rocket text-5xl"></i></div>
+                                <p class="text-xs text-indigo-400 font-bold uppercase">🚀 Revenue Per Show</p>
+                                <p class="text-3xl font-extrabold dark:text-white text-slate-800 mt-1" id="stat-rps">0 €</p>
+                                <p class="text-[10px] text-slate-400 mt-1">Valeur d'un appel tenu</p>
+                            </div>
                         </div>
-                        <div class="overflow-x-auto">
+                    </div>
+
+                    <!-- 4. LEADERBOARD (MANAGER ONLY) -->
+                    <div id="stats-leaderboard-container" class="hidden pt-6 border-t dark:border-slate-700 border-slate-200">
+                        <h3 class="text-lg font-bold dark:text-white text-slate-800 mb-4 flex items-center gap-2"><i class="fa-solid fa-users"></i> Classement Équipe</h3>
+                        <div class="overflow-x-auto rounded-xl border dark:border-slate-700 border-slate-200">
                             <table class="min-w-full text-sm">
-                                <thead class="dark:bg-black/40 bg-slate-100 text-xs uppercase dark:text-slate-400 text-slate-500">
+                                <thead class="dark:bg-slate-900 bg-slate-100 text-xs font-bold uppercase dark:text-slate-400 text-slate-500">
                                     <tr>
-                                        <th class="p-3 text-left pl-6">Source</th>
-                                        <th class="p-3 text-center">Volume</th>
-                                        <th class="p-3 text-left w-1/3">Conversion</th>
-                                        <th class="p-3 text-right">CA Généré</th>
-                                        <th class="p-3 text-right pr-6">Cash</th>
+                                        <th class="p-4 text-left">Closer</th>
+                                        <th class="p-4 text-left">Rôle</th>
+                                        <th class="p-4 text-center">Shows</th>
+                                        <th class="p-4 text-center">Ventes</th>
+                                        <th class="p-4 text-center">Close Rate</th>
+                                        <th class="p-4 text-right">CA Signé</th>
+                                        <th class="p-4 text-right">RPS</th>
                                     </tr>
                                 </thead>
-                                <tbody id="stats-source-body" class="divide-y dark:divide-slate-700/50 divide-slate-100"></tbody>
+                                <tbody id="leaderboard-body" class="divide-y dark:divide-slate-700 divide-slate-200 dark:bg-slate-800 bg-white"></tbody>
                             </table>
                         </div>
                     </div>
@@ -373,6 +408,19 @@
             document.getElementById('page-title').textContent = titles[viewId]; 
             const act = document.getElementById('topbar-actions'); 
             if(viewId === 'dashboard') act.classList.remove('hidden'); else act.classList.add('hidden'); 
+            
+            // ACTIVE BUTTON STATE FIX
+            ['dashboard', 'stats', 'settings'].forEach(v => {
+                const btn = document.getElementById('nav-' + v);
+                if(v === viewId) {
+                    btn.classList.add('active');
+                    btn.classList.remove('inactive');
+                } else {
+                    btn.classList.remove('active');
+                    btn.classList.add('inactive');
+                }
+            });
+
             if(viewId === 'stats') updateReports(); 
             if(viewId === 'settings') {
                 renderSettingsView(); 
@@ -716,172 +764,127 @@
         
         // --- REPORTING (NOUVELLE VERSION INTELLIGENTE) ---
         function updateReports() {
-            const months = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'];
-            const dataMonth = {}, dataSource = {}; 
-            let totalCASigned = 0, totalCash = 0, totalWins = 0, totalPres = 0;
-            const reasons = { ghost: 0, unqualified: 0, nonClose: 0, cancelled: 0 }; // Track failure reasons
+            // Appliquer les filtres date (mois/semaine) AVANT de calculer les stats
+            const m = document.getElementById('filter-month').value;
+            let dataset = allDealsCache;
+            if (m !== 'all') dataset = dataset.filter(d => d.dateRDV && checkMonthFilter(d.dateRDV, m));
 
-            allDealsCache.forEach(d => {
-                if(!d.dateRDV) return; const date = new Date(d.dateRDV); const mName = months[date.getMonth()];
-                const sName = d.source || 'Inconnu';
-                const signed = safeFloat(d.prix); const cash = d.mensualite ? safeFloat(d.mensualite) : 0; 
+            // Variables de calcul
+            let booked = dataset.length;
+            let ghosts = 0, cancelled = 0, rescheduled = 0, unqualified = 0, wins = 0, losses = 0;
+            let caSigned = 0, cashCollected = 0;
+            
+            // Leaderboard data
+            const teamStats = {};
+
+            dataset.forEach(d => {
+                // 1. Catégorisation
+                if(d.ghost) ghosts++;
+                else if(d.cancelled) cancelled++;
+                else if(d.rescheduled) rescheduled++;
+                else if(d.unqualified) unqualified++;
+                else if(d.close) wins++;
+                else if(d.nonClose) losses++;
+
+                // 2. Finance
+                const price = safeFloat(d.prix);
+                const cash = safeFloat(d.mensualite);
+                if(d.close) { caSigned += price; cashCollected += cash; }
+
+                // 3. Leaderboard Aggregation
+                const owner = d.ownerName || currentUser.name || "Moi";
+                const role = d.ownerRole || "Closer"; // NEW: Récupération du rôle
                 
-                // Aggregation Logique
-                if(d.close) { totalCASigned += signed; totalCash += cash; totalWins++; }
-                if(!d.ghost && !d.cancelled && !d.rescheduled) totalPres++; // Présence = Pas annulé, pas reporté, pas ghost
-
-                // Failure Reasons
-                if(d.ghost) reasons.ghost++;
-                if(d.unqualified) reasons.unqualified++;
-                if(d.nonClose) reasons.nonClose++;
-                if(d.cancelled) reasons.cancelled++;
-
-                // Data per Month
-                if(!dataMonth[mName]) dataMonth[mName] = { ca: 0, cash: 0 };
-                if(d.close) { dataMonth[mName].ca += signed; dataMonth[mName].cash += cash; }
-
-                // Data per Source
-                if(!dataSource[sName]) dataSource[sName] = { count: 0, win: 0, ca: 0, cash: 0 };
-                dataSource[sName].count++;
-                if(d.close) { dataSource[sName].win++; dataSource[sName].ca += signed; dataSource[sName].cash += cash; }
-            });
-
-            // UPDATE KPIS DOM
-            document.getElementById('report-ca-sign').textContent = totalCASigned.toLocaleString('fr-FR') + ' €';
-            document.getElementById('report-ca-cash').textContent = totalCash.toLocaleString('fr-FR') + ' €';
-            
-            const closingRate = totalPres ? Math.round((totalWins/totalPres)*100) : 0;
-            document.getElementById('report-tx-close').textContent = closingRate + '%';
-            document.getElementById('report-wins-total').textContent = `${totalWins}/${totalPres}`;
-            document.getElementById('bar-tx-close').style.width = `${closingRate}%`;
-
-            const collectionRate = totalCASigned ? Math.round((totalCash/totalCASigned)*100) : 0;
-            document.getElementById('report-collection-rate').textContent = `Taux d'encaissement: ${collectionRate}%`;
-
-            document.getElementById('report-avg-cart').textContent = totalWins ? Math.round(totalCASigned/totalWins).toLocaleString('fr-FR') + ' €' : '0 €';
-
-            // RENDER CHARTS
-            renderFinanceChart(months, dataMonth);
-            renderReasonsChart(reasons);
-            renderSourceTable(dataSource);
-        }
-
-        let financeChart, reasonsChart;
-
-        function renderFinanceChart(labels, dataObj) {
-            const ctx = document.getElementById('chart-finance').getContext('2d');
-            const caData = labels.map(m => dataObj[m] ? dataObj[m].ca : 0);
-            const cashData = labels.map(m => dataObj[m] ? dataObj[m].cash : 0);
-            
-            if(financeChart) financeChart.destroy();
-            
-            financeChart = new Chart(ctx, { 
-                type: 'bar', 
-                data: { 
-                    labels: labels.map(l => l.charAt(0).toUpperCase() + l.slice(1,3)), 
-                    datasets: [ 
-                        { 
-                            label: 'CA Signé', 
-                            data: caData, 
-                            backgroundColor: '#f59e0b', // Amber
-                            borderRadius: 4,
-                            order: 2
-                        }, 
-                        { 
-                            type: 'line',
-                            label: 'Cash Encaissé', 
-                            data: cashData, 
-                            borderColor: '#10b981', // Emerald
-                            borderWidth: 3,
-                            pointBackgroundColor: '#10b981',
-                            tension: 0.4,
-                            order: 1
-                        } 
-                    ] 
-                }, 
-                options: { 
-                    responsive: true, 
-                    maintainAspectRatio: false, 
-                    plugins: { legend: { display: false } }, 
-                    scales: { 
-                        y: { grid: { color: '#334155' }, ticks: { color: '#94a3b8' } }, 
-                        x: { grid: { display: false }, ticks: { color: '#94a3b8' } } 
-                    } 
-                } 
-            });
-        }
-
-        function renderReasonsChart(reasons) {
-            const ctx = document.getElementById('chart-reasons').getContext('2d');
-            const dataValues = [reasons.nonClose, reasons.unqualified, reasons.ghost, reasons.cancelled];
-            const total = dataValues.reduce((a,b)=>a+b,0);
-
-            if(reasonsChart) reasonsChart.destroy();
-
-            // Custom Legend
-            const legendDiv = document.getElementById('reasons-legend');
-            legendDiv.innerHTML = '';
-            const labels = ['Perdu', 'Non Qualif', 'Ghost', 'Annulé'];
-            const colors = ['#ef4444', '#f97316', '#f59e0b', '#64748b'];
-            
-            labels.forEach((l, i) => {
-                const pct = total ? Math.round((dataValues[i]/total)*100) : 0;
-                legendDiv.innerHTML += `<div class="flex justify-between items-center text-xs text-slate-300">
-                    <span class="flex items-center gap-2"><span class="w-2 h-2 rounded-full" style="background:${colors[i]}"></span> ${l}</span>
-                    <span class="font-bold">${dataValues[i]} <span class="opacity-50 text-[10px] ml-1">(${pct}%)</span></span>
-                </div>`;
-            });
-
-            reasonsChart = new Chart(ctx, { 
-                type: 'doughnut', 
-                data: { 
-                    labels: labels, 
-                    datasets: [{ 
-                        data: dataValues, 
-                        backgroundColor: colors, 
-                        borderWidth: 0,
-                        hoverOffset: 4
-                    }] 
-                }, 
-                options: { 
-                    responsive: true, 
-                    maintainAspectRatio: false, 
-                    cutout: '75%',
-                    plugins: { legend: { display: false } } 
-                } 
-            });
-        }
-
-        function renderSourceTable(data) {
-            const tbody = document.getElementById('stats-source-body'); tbody.innerHTML = '';
-            Object.keys(data).sort((a,b) => data[b].ca - data[a].ca).forEach(k => {
-                const s = data[k]; 
-                const tx = s.count ? Math.round((s.win/s.count)*100) : 0;
+                if(!teamStats[owner]) teamStats[owner] = { booked: 0, shows: 0, wins: 0, ca: 0, role: role };
                 
-                // Progress Bar logic for conversion
-                const barColor = tx > 30 ? 'bg-emerald-500' : (tx > 15 ? 'bg-amber-500' : 'bg-red-500');
-                
-                tbody.innerHTML += `
-                <tr class="hover:bg-white/5 transition-colors">
-                    <td class="p-3 pl-6 text-slate-300 font-bold">${k}</td>
-                    <td class="p-3 text-center text-slate-500 text-xs">${s.count} Leads</td>
-                    <td class="p-3">
-                        <div class="flex items-center gap-2">
-                            <span class="text-xs font-bold w-8 text-right">${tx}%</span>
-                            <div class="flex-1 h-1.5 bg-slate-700 rounded-full overflow-hidden"><div class="${barColor} h-full rounded-full" style="width:${tx}%"></div></div>
-                        </div>
-                    </td>
-                    <td class="p-3 text-right text-white font-bold font-mono">${s.ca.toLocaleString()} €</td>
-                    <td class="p-3 text-right pr-6 text-emerald-400 font-mono text-xs">${s.cash.toLocaleString()} €</td>
-                </tr>`;
+                teamStats[owner].booked++;
+                if(!d.ghost && !d.cancelled && !d.rescheduled) {
+                    teamStats[owner].shows++;
+                    if(d.close) {
+                        teamStats[owner].wins++;
+                        teamStats[owner].ca += price;
+                    }
+                }
             });
+
+            // 4. Calculs Dérivés (Global)
+            const shows = booked - (ghosts + cancelled + rescheduled);
+            const showRate = booked ? Math.round((shows/booked)*100) : 0;
+            const closeRate = shows ? Math.round((wins/shows)*100) : 0;
+            const lossRate = shows ? Math.round((losses/shows)*100) : 0;
+            const nqRate = shows ? Math.round((unqualified/shows)*100) : 0; // NQ font partie des shows généralement
+            
+            const rps = shows ? Math.round(caSigned / shows) : 0;
+            const aov = wins ? Math.round(caSigned / wins) : 0;
+            const collectionRate = caSigned ? Math.round((cashCollected / caSigned)*100) : 0;
+
+            // 5. Affichage DOM
+            document.getElementById('stat-booked').textContent = booked;
+            document.getElementById('stat-shows').textContent = shows;
+            document.getElementById('stat-show-rate').textContent = `Show Rate: ${showRate}%`;
+            
+            document.getElementById('stat-ghost').textContent = ghosts;
+            document.getElementById('stat-ghost-rate').textContent = booked ? Math.round((ghosts/booked)*100) + '%' : '0%';
+            
+            document.getElementById('stat-rescheduled').textContent = rescheduled;
+            document.getElementById('stat-rescheduled-rate').textContent = booked ? Math.round((rescheduled/booked)*100) + '%' : '0%';
+
+            document.getElementById('stat-wins').textContent = wins;
+            document.getElementById('stat-close-rate').textContent = closeRate + '%';
+            document.getElementById('bar-close-rate').style.width = closeRate + '%';
+            
+            document.getElementById('stat-loss-rate').textContent = lossRate + '%';
+            document.getElementById('stat-loss-nb').textContent = losses + ' Deals';
+            
+            document.getElementById('stat-nq-rate').textContent = nqRate + '%';
+            document.getElementById('stat-nq-nb').textContent = unqualified + ' Deals';
+
+            document.getElementById('stat-ca').textContent = caSigned.toLocaleString('fr-FR') + ' €';
+            document.getElementById('stat-cash').textContent = cashCollected.toLocaleString('fr-FR') + ' €';
+            document.getElementById('stat-collection').textContent = `Encaissement: ${collectionRate}%`;
+            document.getElementById('stat-aov').textContent = aov.toLocaleString('fr-FR') + ' €';
+            document.getElementById('stat-rps').textContent = rps.toLocaleString('fr-FR') + ' €';
+
+            // 6. Rendu Leaderboard (Si Manager/Admin)
+            if(currentUser.role !== 'closer') {
+                document.getElementById('stats-leaderboard-container').classList.remove('hidden');
+                const tbody = document.getElementById('leaderboard-body');
+                tbody.innerHTML = '';
+                
+                // Trier par CA décroissant
+                Object.keys(teamStats).sort((a,b) => teamStats[b].ca - teamStats[a].ca).forEach(name => {
+                    const s = teamStats[name];
+                    const cr = s.shows ? Math.round((s.wins/s.shows)*100) : 0;
+                    const rpsUser = s.shows ? Math.round(s.ca/s.shows) : 0;
+                    
+                    // Style conditionnel pour le rôle
+                    const roleBadge = s.role.toLowerCase() === 'manager' || s.role.toLowerCase() === 'admin' 
+                        ? `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-purple-100 text-purple-600 uppercase tracking-wide">Manager</span>`
+                        : `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-500 uppercase tracking-wide">Closer</span>`;
+
+                    tbody.innerHTML += `
+                    <tr class="hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
+                        <td class="p-4 font-bold dark:text-white text-slate-800">${name}</td>
+                        <td class="p-4">${roleBadge}</td>
+                        <td class="p-4 text-center dark:text-slate-300 text-slate-600">${s.shows}</td>
+                        <td class="p-4 text-center dark:text-slate-300 text-slate-600 font-bold">${s.wins}</td>
+                        <td class="p-4 text-center">
+                            <span class="px-2 py-1 rounded text-xs font-bold ${cr > 30 ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-600'}">${cr}%</span>
+                        </td>
+                        <td class="p-4 text-right font-mono font-bold text-amber-500">${s.ca.toLocaleString()} €</td>
+                        <td class="p-4 text-right font-mono text-xs dark:text-slate-400 text-slate-500">${rpsUser.toLocaleString()} €</td>
+                    </tr>`;
+                });
+            }
         }
 
         function toggleClosing() { const div = document.getElementById('closing-details'); if(document.getElementById('close').checked) div.classList.remove('hidden'); else div.classList.add('hidden'); }
         document.getElementById('close').addEventListener('change', toggleClosing);
         function resetForm() { document.getElementById('deal-form').reset(); editingId = null; toggleClosing(); document.getElementById('comment-history').classList.add('hidden'); document.getElementById('prospect-avatar').textContent = "?"; setDealStatus(null); }
         function formatDateFR(s) { if(!s) return '-'; const d = new Date(s); return d.toLocaleDateString('fr-FR'); }
-        document.getElementById('filter-month').addEventListener('change', applyFilters); document.getElementById('filter-status').addEventListener('change', applyFilters); document.getElementById('reset-filters').addEventListener('click', () => { document.getElementById('filter-month').value = 'current'; document.getElementById('filter-status').value = 'all'; applyFilters(); });
+        document.getElementById('filter-month').addEventListener('change', () => { applyFilters(); if(!document.getElementById('view-stats').classList.contains('hidden')) updateReports(); }); 
+        document.getElementById('filter-status').addEventListener('change', applyFilters); 
+        document.getElementById('reset-filters').addEventListener('click', () => { document.getElementById('filter-month').value = 'current'; document.getElementById('filter-status').value = 'all'; applyFilters(); if(!document.getElementById('view-stats').classList.contains('hidden')) updateReports(); });
         function getWeekNumber(d) { d = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate())); d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay()||7)); var yearStart = new Date(Date.UTC(d.getUTCFullYear(),0,1)); return Math.ceil((((d - yearStart) / 86400000) + 1)/7); }
         function safeFloat(val) { const s = String(val).replace(/[^0-9.-]/g, ''); const f = parseFloat(s); return isNaN(f) ? 0 : f; }
 
