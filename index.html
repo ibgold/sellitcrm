@@ -140,6 +140,17 @@
 
                 <!-- VIEW: STATS (REFONTE TOTALE) -->
                 <div id="view-stats" class="hidden space-y-8 fade-in">
+                    
+                    <!-- NEW FILTER HEADER -->
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="text-lg font-bold dark:text-white text-slate-800 flex items-center gap-2"><i class="fa-solid fa-calendar-days text-amber-500"></i> Période d'analyse</h3>
+                        <select id="stats-filter-date" onchange="updateReports()" class="form-input !w-auto !py-2 !pl-3 !pr-8 font-bold cursor-pointer">
+                            <option value="all">Tout l'historique</option>
+                            <option value="current">Ce mois</option>
+                            <option value="week">Cette semaine</option>
+                        </select>
+                    </div>
+
                     <!-- 1. LE CARBURANT (VOLUME) -->
                     <div>
                         <h3 class="text-sm font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400 mb-4 flex items-center gap-2"><i class="fa-solid fa-gas-pump"></i> Volume</h3>
@@ -642,7 +653,9 @@
                 
                 // --- ROUTEUR INTELLIGENT ---
                 // Si c'est Cécilia, on l'envoie sur son interface dédiée
-                if (data.user.username.toLowerCase() === 'cecilia' || data.user.role === 'medical') {
+                // CORRECTION : Le backend renvoie parfois 'user' au lieu de 'username'
+                const pseudo = data.user.username || data.user.user || "";
+                if (pseudo.toLowerCase() === 'cecilia' || data.user.role === 'medical') {
                     window.location.href = 'medical.html';
                     return; // On charge pas le reste
                 }
@@ -806,7 +819,7 @@
         // --- REPORTING (NOUVELLE VERSION INTELLIGENTE) ---
         function updateReports() {
             // Appliquer les filtres date (mois/semaine) AVANT de calculer les stats
-            const m = document.getElementById('filter-month').value;
+            const m = document.getElementById('stats-filter-date').value;
             let dataset = allDealsCache;
             if (m !== 'all') dataset = dataset.filter(d => d.dateRDV && checkMonthFilter(d.dateRDV, m));
 
