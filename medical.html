@@ -184,7 +184,8 @@
                              <div class="absolute -top-3 left-3 px-2 bg-slate-900 text-[10px] font-bold text-cyan-400 uppercase">Étape 1 : Téléconsultation</div>
                              <div class="grid grid-cols-2 gap-4">
                                 <div class="form-group"><label class="text-cyan-300">Date RDV</label><input type="date" id="dateRDV" class="form-input [color-scheme:dark] border-cyan-500/30"></div>
-                                <div class="form-group"><label class="text-cyan-300">Statut Paiement Consult</label><select id="source" class="form-input border-cyan-500/30"><option value="">Non payé</option><option value="Payé">✅ Payé (CB/Lien)</option></select></div>
+                                <div class="form-group"><label class="text-cyan-300">Statut Paiement</label><select id="source" class="form-input border-cyan-500/30"><option value="">Non payé</option><option value="Payé">✅ Payé (CB/Lien)</option></select></div>
+                                <div class="form-group"><label class="text-cyan-300">Montant Consult. (€)</label><input type="number" id="montantConsult" class="form-input border-cyan-500/30" placeholder="50"></div>
                              </div>
                         </div>
 
@@ -441,6 +442,8 @@
             document.getElementById('numero').value = d.numero || ''; 
             document.getElementById('source').value = d.source || ''; 
             document.getElementById('dateRDV').value = d.dateRDV ? d.dateRDV.split('T')[0] : '';
+            // MAP BACKEND 'typePaiement' to 'montantConsult'
+            document.getElementById('montantConsult').value = d.typePaiement || '';
             document.getElementById('enregistrementCall').value = d.enregistrementCall || '';
             document.getElementById('formation').value = d.formation || ''; 
             document.getElementById('prix').value = d.prix || ''; 
@@ -476,6 +479,8 @@
                 numero: document.getElementById('numero').value, 
                 dateRDV: document.getElementById('dateRDV').value, 
                 source: document.getElementById('source').value, 
+                // MAP 'montantConsult' to BACKEND 'typePaiement'
+                typePaiement: document.getElementById('montantConsult').value,
                 formation: document.getElementById('formation').value, 
                 prix: document.getElementById('prix').value, 
                 mensualite: document.getElementById('mensualite').value,
