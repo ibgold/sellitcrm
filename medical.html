@@ -305,7 +305,10 @@
             const tbody = document.getElementById('deals-table-body');
             tbody.innerHTML = '';
             
-            let filtered = allDealsCache.filter(d => (d.nomPrenom||'').toLowerCase().includes(term));
+            let filtered = allDealsCache.filter(d => 
+                d.nomPrenom && d.nomPrenom.trim() !== "" && 
+                d.nomPrenom.toLowerCase().includes(term)
+            );
             
             // Stats Count
             let toCallCount = 0;
